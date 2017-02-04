@@ -1,0 +1,16 @@
+#binary
+*.o
+*.d
+/bin/
+
+# clion
+*.ipr
+*.iws
+*.iml
+*.idea
+/cmake-*/
+
+#other
+*.exe
+*.zip
+*.DS_Store
