@@ -27,7 +27,14 @@
 
 class Task
 {
+    public:
+        Task();
+        void run();
 
+        enum EnumResult {PASS, FAIL};
+
+    protected:
+        virtual EnumResult run(EnumResult);
 };
 
 #endif //RSHELL_TASK_H
