@@ -22,10 +22,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
+#include "../headers/Parser.h"
+#include "../headers/tasks/Task.h"
 #include <iostream>
 
 int main()
 {
-    std::cout << "Hello, World!" << std::endl;
+    std::string line = "";
+
+    while (line != "exit") //TODO change to always true
+    {
+        std::cout << "$ ";
+
+        std::getline(std::cin, line);
+
+        Task* task;//= Paser::createTask(line);
+        //task->run();
+
+        if (task)
+        {
+            delete task;
+        }
+    }
+
     return 0;
 }

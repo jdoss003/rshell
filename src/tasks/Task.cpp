@@ -23,3 +23,15 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/Task.h"
+
+Task::Task() : {}
+
+void Task::run()
+{
+    this->run(PASS);
+}
+
+Task::EnumResult Task::run(Task::EnumResult)
+{
+    return FAIL;
+}
