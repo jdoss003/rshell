@@ -29,12 +29,12 @@ class Task
 {
     public:
         Task();
-        void run();
-
+        virtual ~Task();
         enum EnumResult {PASS, FAIL};
 
-    protected:
+        void run();
         virtual EnumResult run(EnumResult);
+        virtual void addSubtask(Task* t);
 };
 
 #endif //RSHELL_TASK_H

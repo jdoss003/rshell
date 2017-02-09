@@ -25,9 +25,21 @@
 #ifndef RSHELL_EXTERNALTASK_H
 #define RSHELL_EXTERNALTASK_H
 
-class ExternalTask
-{
+#include "Task.h"
+#include <string>
+#include <vector>
 
+class ExternalTask : public Task
+{
+    public:
+        ExternalTask(char* p, char** a);
+        ExternalTask(std::string p, std::vector<char*> a);
+        ~ExternalTask();
+        EnumResult run(EnumResult r);
+
+    private:
+        char* prog;
+        char** args;
 };
 
 #endif //RSHELL_EXTERNALTASK_H

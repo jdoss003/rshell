@@ -25,9 +25,19 @@
 #ifndef RSHELL_TASKLIST_H
 #define RSHELL_TASKLIST_H
 
-class TaskList
-{
+#include "Task.h"
+#include <vector>
 
+class TaskList : public Task
+{
+    public:
+        TaskList();
+        ~TaskList();
+        void addSubtask(Task* t);
+        EnumResult run(EnumResult r);
+
+    private:
+        std::vector<Task*> subtasks;
 };
 
 #endif //RSHELL_TASKLIST_H

@@ -25,9 +25,13 @@
 #ifndef RSHELL_EXITTASK_H
 #define RSHELL_EXITTASK_H
 
-class ExitTask
-{
+#include "Task.h"
 
+class ExitTask : public Task
+{
+    public:
+        ExitTask();
+        EnumResult run(EnumResult r);
 };
 
 #endif //RSHELL_EXITTASK_H

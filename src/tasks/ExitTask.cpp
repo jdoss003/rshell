@@ -23,3 +23,10 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExitTask.h"
+
+ExitTask::ExitTask() {}
+
+Task::EnumResult ExitTask::run(Task::EnumResult r)
+{
+    return PASS; // TODO
+}

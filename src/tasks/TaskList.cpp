@@ -23,3 +23,31 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/TaskList.h"
+
+TaskList::TaskList() {}
+
+TaskList::~TaskList()
+{
+    for (unsigned int i = 0; i < this->subtasks.size(); ++i)
+    {
+        if (this->subtasks.at(i))
+        {
+            delete this->subtasks.at(i);
+        }
+    }
+}
+
+Task::EnumResult TaskList::run(Task::EnumResult r)
+{
+    for (unsigned int i = 0; i < this->subtasks.size(); ++i)
+    {
+        r = this->subtasks.at(i)->run(r);
+    }
+
+    return r;
+}
+
+void TaskList::addSubtask(Task* t)
+{
+    this->subtasks.push_back(t);
+}

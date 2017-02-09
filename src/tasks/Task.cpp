@@ -23,15 +23,23 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/Task.h"
+#include <stdexcept>
 
-Task::Task() : {}
+Task::Task() {}
+
+Task::~Task() {}
 
 void Task::run()
 {
     this->run(PASS);
 }
 
-Task::EnumResult Task::run(Task::EnumResult)
+void Task::addSubtask(Task* t)
+{
+    throw new std::runtime_error("ERROR: Tried to add a subtask to a non TaskList object!");
+}
+
+Task::EnumResult Task::run(Task::EnumResult r)
 {
     return FAIL;
 }

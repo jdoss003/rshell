@@ -25,9 +25,18 @@
 #ifndef RSHELL_CONDITIONALTASK_H
 #define RSHELL_CONDITIONALTASK_H
 
-class ConditionalTask
-{
+#include "Task.h"
 
+class ConditionalTask : public Task
+{
+    public:
+        ConditionalTask(Task* t, EnumResult r);
+        ~ConditionalTask();
+        EnumResult run(EnumResult r);
+
+    private:
+        Task* task;
+        EnumResult result;
 };
 
 #endif //RSHELL_CONDITIONALTASK_H

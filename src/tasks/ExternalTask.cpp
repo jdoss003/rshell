@@ -23,3 +23,25 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExternalTask.h"
+
+ExternalTask::ExternalTask(char* p, char** a) : prog(p), args(a) {}
+
+ExternalTask::ExternalTask(std::string p, std::vector<char*> a) : prog(&p[0]), args(&a[0]) {}
+
+ExternalTask::~ExternalTask()
+{
+    if (this->prog)
+    {
+        delete this->prog;
+    }
+
+    if (this->args)
+    {
+        delete[] this->args;
+    }
+}
+
+Task::EnumResult ExternalTask::run(Task::EnumResult r)
+{
+    return r; // TODO
+}

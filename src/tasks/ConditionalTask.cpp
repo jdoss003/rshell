@@ -23,3 +23,23 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ConditionalTask.h"
+
+ConditionalTask::ConditionalTask(Task* t, Task::EnumResult r) : task(t), result(r) {}
+
+ConditionalTask::~ConditionalTask()
+{
+    if (this->task)
+    {
+        delete this->task;
+    }
+}
+
+Task::EnumResult ConditionalTask::run(Task::EnumResult r)
+{
+    if (r == this->result)
+    {
+        return this->task->run(r);
+    }
+
+    return r; // TODO check of this should be r or PASS
+}
