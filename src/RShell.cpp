@@ -25,23 +25,28 @@
 #include "../headers/Parser.h"
 #include "../headers/tasks/Task.h"
 #include <iostream>
+#include <stdexcept>
 
 int main()
 {
     std::string line = "";
 
-    while (line != "exit") //TODO change to always true
+    while (line != "exit") // TODO change to always true
     {
         std::cout << "$ ";
 
         std::getline(std::cin, line);
 
-        Task* task;//= Paser::createTask(line);
-        //task->run();
+        Task* task = NULL;//= Paser::createTask(line);
 
         if (task)
         {
+            task->run();
             delete task;
+        }
+        else
+        {
+            throw new std::runtime_error("ERROR: Received a NULL Task pointer from the parser!");
         }
     }
 
