@@ -30,6 +30,7 @@
 int main()
 {
     std::string line = "";
+    Parser*p = new Parser;
 
     while (line != "exit") // TODO change to always true
     {
@@ -37,7 +38,7 @@ int main()
 
         std::getline(std::cin, line);
 
-        Task* task = NULL;//= Paser::createTask(line);
+        Task*task = p->parseInput(line);
 
         if (task)
         {

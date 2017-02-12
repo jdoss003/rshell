@@ -25,9 +25,33 @@
 #ifndef RSHELL_PARSER_H
 #define RSHELL_PARSER_H
 
+#include <string>
+#include <stdio.h>
+#include <vector>
+#include <set>
+#include <iostream>
+#include <cstring>
+
+#include "../headers/tasks/ConditionalTask.h"
+#include "../headers/tasks/TaskList.h"
+#include "../headers/tasks/ExternalTask.h"
+#include "../headers/tasks/Task.h"
+#include "../headers/tasks/ExitTask.h"
+
 class Parser
 {
-//Test
+    public:
+        Parser()
+        {
+        };
+        ~Parser()
+        {
+        };
+        Task*parseInput(std::string strInput);
+    private:
+        Task*createTask(std::string input, Task*tList);
+        Task*createCondTask(std::string input, Task::EnumResult r, Task*tList);
+
 };
 
 #endif //RSHELL_PARSER_H
