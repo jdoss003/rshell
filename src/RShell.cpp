@@ -32,13 +32,13 @@ int main()
     std::string line = "";
     Parser*p = new Parser;
 
-    while (line != "exit") // TODO change to always true
+    while (line != "exit\n") // TODO change to always true
     {
         std::cout << "$ ";
 
         std::getline(std::cin, line);
 
-        Task*task = p->parseInput(line);
+        Task* task = p->parseInput(line);
 
         if (task)
         {
@@ -47,7 +47,7 @@ int main()
         }
         else
         {
-            throw new std::runtime_error("ERROR: Received a NULL Task pointer from the parser!");
+            std::cout << "ERROR: Received a NULL Task pointer from the parser!" << std::endl;
         }
     }
 
