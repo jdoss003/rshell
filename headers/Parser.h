@@ -38,20 +38,9 @@
 #include "../headers/tasks/Task.h"
 #include "../headers/tasks/ExitTask.h"
 
-class Parser
+namespace Parser
 {
-    public:
-        Parser()
-        {
-        };
-        ~Parser()
-        {
-        };
-        Task*parseInput(std::string strInput);
-    private:
-        Task*createTask(std::string input, Task*tList);
-        Task*createCondTask(std::string input, Task::EnumResult r, Task*tList);
-
-};
+    Task* parseInput(std::string strInput);
+}
 
 #endif //RSHELL_PARSER_H

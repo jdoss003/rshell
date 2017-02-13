@@ -24,8 +24,8 @@
 
 #include "../headers/Parser.h"
 
-////////Creates a task when a command and arguments end with either a "||" or "&&"//////////
-Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
+///////////Creates a task when a command and arguments end with a ";" or '/0'.//////////////////
+Task* createTask(std::string input)
 {
     unsigned int prevPos = 0;
     unsigned int nextPos = 0;
@@ -54,9 +54,7 @@ Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
             ///Test if exit command is given
             if (!input.compare("exit"))
             {
-                Task* exit = new ExitTask();
-                tList->addSubtask(exit);
-                return tList;
+                return new ExitTask();
             }
         }
     }
@@ -81,86 +79,15 @@ Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
                 args.push_back(preArg);
             }
         }
-        else if (j == (input.size()))
-        {
-            std::cout << "Arg: NULL" << std::endl; //TODO Delete this
-            args.push_back(NULL);
-        }
     }
 
-    Task* t = new ExternalTask(args);
-    Task* ct = new ConditionalTask(t, r);
-    tList->addSubtask(ct);
-    return tList;
+    return new ExternalTask(args);
 }
 
-///////////Creates a task when a command and arguments end with a ";" or '/0'.//////////////////
-Task* Parser::createTask(std::string input, Task* tList)
+////////Creates a task when a command and arguments end with either a "||" or "&&"//////////
+Task* createCondTask(std::string input, Task::EnumResult r)
 {
-    unsigned int prevPos = 0;
-    unsigned int nextPos = 0;
-    std::vector<std::string> args; //Vector to hold arguments
-
-    ///Find command
-    for (unsigned int i = 0; i < (input.size() + 1); i++)
-    {
-        if (input[i] == ' ' && i == 0)
-        {
-            prevPos = i + 1;
-        }
-        else if (input[i] == ' ' && isalnum(input[i - 1])) //a space signals the end of a command. Create command string
-        {
-            std::string command = input.substr(prevPos, (i - prevPos));
-            std::cout << "Command: " << command << std::endl; //TODO Delete this
-            args.push_back(command);
-            prevPos = i;
-            break;
-        }
-
-        else if (i == prevPos) //If it reaches position of conditional statement
-        {
-            std::cout << "Exit: " << input << std::endl; //TODO Delete this
-
-            ///Test if exit command is given
-            if (!input.compare("exit"))
-            {
-                Task* exit = new ExitTask();
-                tList->addSubtask(exit);
-                return tList;
-            }
-        }
-    }
-
-    ///Find arguments
-    for (unsigned int j = prevPos; j < (input.size() + 1); j++)
-    {
-        if (input[j] == ' ')
-        {
-            if (isalnum(input[j + 1]) || input[j + 1] == '-')
-            {
-                nextPos = j + 1;
-            }
-            continue;
-        }
-        else if (isalnum(input[j]) || input[j] == '-')
-        {
-            if (input[j + 1] == ' ' || input[j + 1] == '\0')
-            {
-                std::string preArg = input.substr(nextPos, (j - nextPos + 1));
-                std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                args.push_back(preArg);
-            }
-        }
-        else if (j == (input.size()))
-        {
-            std::cout << "Arg: NULL" << std::endl; //TODO Delete this
-            args.push_back(NULL);
-        }
-    }
-
-    Task* t = new ExternalTask(args);
-    tList->addSubtask(t);
-    return tList;
+    return new ConditionalTask(createTask(input), r);
 }
 
 /////////////////////*Main Parser Function*////////////////////////
@@ -178,8 +105,7 @@ Task* Parser::parseInput(std::string strInput)
     ///Error and comment checking
     if (strInput.size() == 0)
     {
-        Task* t = new Task();
-        return t;
+        return new Task();
     }
     for (unsigned int k = 0; k < strInput.length(); k++)
     {
@@ -205,6 +131,7 @@ Task* Parser::parseInput(std::string strInput)
             }
             k = k + 1;
         }
+
         input = strInput;
     }
 
@@ -221,7 +148,7 @@ Task* Parser::parseInput(std::string strInput)
             if (orFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::FAIL, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
                 prevCond = i + 2;
                 orFlg = false; //set both flags to false
                 andFlg = false;
@@ -230,7 +157,7 @@ Task* Parser::parseInput(std::string strInput)
             else if (andFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::PASS, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
                 prevCond = i + 2;
                 orFlg = false; //set both flags to false
                 andFlg = false;
@@ -238,7 +165,7 @@ Task* Parser::parseInput(std::string strInput)
             else
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createTask(str, tList); //Create task
+                tList->addSubtask(createTask(str)); //Create task
                 prevCond = i + 2;
             }
         }
@@ -249,7 +176,7 @@ Task* Parser::parseInput(std::string strInput)
             if (orFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::FAIL, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
                 prevCond = i + 2;
                 orFlg = false;
                 andFlg = true;
@@ -258,16 +185,17 @@ Task* Parser::parseInput(std::string strInput)
             else if (andFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::PASS, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
                 prevCond = i + 2;
             }
             else
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createTask(str, tList); //Create task
+                tList->addSubtask(createTask(str)); //Create task
                 prevCond = i + 2;
                 andFlg = true;
             }
+
             i = i + 1; //Skip second "&"
         }
 
@@ -277,14 +205,14 @@ Task* Parser::parseInput(std::string strInput)
             if (orFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::FAIL, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
                 prevCond = i + 2;
 
             }
             else if (andFlg)
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createCondTask(str, Task::PASS, tList); //Create conditional task
+                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
                 prevCond = i + 2;
                 andFlg = false;
                 orFlg = true;
@@ -292,12 +220,14 @@ Task* Parser::parseInput(std::string strInput)
             else
             {
                 std::string str = input.substr(prevCond, (i - prevCond));
-                createTask(str, tList); //Create conditional task
+                tList->addSubtask(createTask(str)); //Create conditional task
                 prevCond = i + 2;
                 orFlg = true;
             }
+
             i = i + 1; //Skip second "|"
         }
     }
+
     return tList;
 }

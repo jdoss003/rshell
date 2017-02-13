@@ -40,7 +40,6 @@ RShell::~RShell()
 void RShell::runLoop()
 {
     std::string line = "";
-    Parser p;
 
     while (line != "exit\n") // TODO change to always true
     {
@@ -48,7 +47,7 @@ void RShell::runLoop()
 
         std::getline(std::cin, line);
 
-        this->task = p.parseInput(line);
+        this->task = Parser::parseInput(line);
 
         if (this->task)
         {
