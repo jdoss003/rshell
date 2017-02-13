@@ -28,12 +28,14 @@ TaskList::TaskList() {}
 
 TaskList::~TaskList()
 {
-    for (unsigned int i = 0; i < this->subtasks.size(); ++i)
+    while (!this->subtasks.empty())
     {
-        if (this->subtasks.at(i))
+        if (this->subtasks.back())
         {
-            delete this->subtasks.at(i);
+            delete this->subtasks.back();
         }
+
+        this->subtasks.pop_back();
     }
 }
 

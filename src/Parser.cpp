@@ -25,11 +25,11 @@
 #include "../headers/Parser.h"
 
 ////////Creates a task when a command and arguments end with either a "||" or "&&"//////////
-Task*Parser::createCondTask(std::string input, Task::EnumResult r, Task*tList)
+Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
 {
     unsigned int prevPos = 0;
     unsigned int nextPos = 0;
-    std::string command;
+    std::vector<char*> args; //Vector to hold arguments
 
     ///Find command
     for (unsigned int i = 0; i < (input.size() + 1); i++)
@@ -40,8 +40,11 @@ Task*Parser::createCondTask(std::string input, Task::EnumResult r, Task*tList)
         }
         else if (input[i] == ' ' && isalnum(input[i - 1])) //a space signals the end of a command. Create command string
         {
-            command = input.substr(prevPos, (i - prevPos));
+            std::string command = input.substr(prevPos, (i - prevPos));
             std::cout << "Command: " << command << std::endl; //TODO Delete this
+            char* com = new char[command.length() + 1];
+            std::strcpy(com, command.c_str());
+            args.push_back(com);
             prevPos = i;
             break;
         }
@@ -53,14 +56,12 @@ Task*Parser::createCondTask(std::string input, Task::EnumResult r, Task*tList)
             ///Test if exit command is given
             if (!input.compare("exit"))
             {
-                Task*exit = new ExitTask();
+                Task* exit = new ExitTask();
                 tList->addSubtask(exit);
                 return tList;
             }
         }
     }
-
-    std::vector<char*> args; //Vector to hold arguments
 
     ///Find arguments
     for (unsigned int j = prevPos; j < (input.size() + 1); j++)
@@ -79,7 +80,7 @@ Task*Parser::createCondTask(std::string input, Task::EnumResult r, Task*tList)
             {
                 std::string preArg = input.substr(nextPos, (j - nextPos + 1));
                 std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                char*arg = new char[preArg.length() + 1];
+                char* arg = new char[preArg.length() + 1];
                 std::strcpy(arg, preArg.c_str());
                 args.push_back(arg);
             }
@@ -91,18 +92,18 @@ Task*Parser::createCondTask(std::string input, Task::EnumResult r, Task*tList)
         }
     }
 
-    Task*t = new ExternalTask(command, args);
-    Task*ct = new ConditionalTask(t, r);
+    Task* t = new ExternalTask(args);
+    Task* ct = new ConditionalTask(t, r);
     tList->addSubtask(ct);
     return tList;
 }
 
 ///////////Creates a task when a command and arguments end with a ";" or '/0'.//////////////////
-Task*Parser::createTask(std::string input, Task*tList)
+Task* Parser::createTask(std::string input, Task* tList)
 {
     unsigned int prevPos = 0;
     unsigned int nextPos = 0;
-    std::string command;
+    std::vector<char*> args; //Vector to hold arguments
 
     ///Find command
     for (unsigned int i = 0; i < (input.size() + 1); i++)
@@ -113,8 +114,11 @@ Task*Parser::createTask(std::string input, Task*tList)
         }
         else if (input[i] == ' ' && isalnum(input[i - 1])) //a space signals the end of a command. Create command string
         {
-            command = input.substr(prevPos, (i - prevPos));
+            std::string command = input.substr(prevPos, (i - prevPos));
             std::cout << "Command: " << command << std::endl; //TODO Delete this
+            char* com = new char[command.length() + 1];
+            std::strcpy(com, command.c_str());
+            args.push_back(com);
             prevPos = i;
             break;
         }
@@ -126,14 +130,12 @@ Task*Parser::createTask(std::string input, Task*tList)
             ///Test if exit command is given
             if (!input.compare("exit"))
             {
-                Task*exit = new ExitTask();
+                Task* exit = new ExitTask();
                 tList->addSubtask(exit);
                 return tList;
             }
         }
     }
-
-    std::vector<char*> args; //Vector to hold arguments
 
     ///Find arguments
     for (unsigned int j = prevPos; j < (input.size() + 1); j++)
@@ -152,7 +154,7 @@ Task*Parser::createTask(std::string input, Task*tList)
             {
                 std::string preArg = input.substr(nextPos, (j - nextPos + 1));
                 std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                char*arg = new char[preArg.length() + 1];
+                char* arg = new char[preArg.length() + 1];
                 std::strcpy(arg, preArg.c_str());
                 args.push_back(arg);
             }
@@ -164,13 +166,13 @@ Task*Parser::createTask(std::string input, Task*tList)
         }
     }
 
-    Task*t = new ExternalTask(command, args);
+    Task* t = new ExternalTask(args);
     tList->addSubtask(t);
     return tList;
 }
 
 /////////////////////*Main Parser Function*////////////////////////
-Task*Parser::parseInput(std::string strInput)
+Task* Parser::parseInput(std::string strInput)
 {
     //variable used for tracking position of last conditional statement
     unsigned int prevCond = 0;
@@ -184,7 +186,7 @@ Task*Parser::parseInput(std::string strInput)
     ///Error and comment checking
     if (strInput.size() == 0)
     {
-        Task*t = new Task();
+        Task* t = new Task();
         return t;
     }
     for (unsigned int k = 0; k < strInput.length(); k++)
@@ -195,7 +197,7 @@ Task*Parser::parseInput(std::string strInput)
             input = strInput.substr(prevCond, (k - prevCond));
             if (input.empty())
             {
-                Task*t = new Task();
+                Task* t = new Task();
                 return t;
             }
             break;
@@ -206,7 +208,7 @@ Task*Parser::parseInput(std::string strInput)
         {
             if (!(strInput[k + 1] == '|' || strInput[k + 1] == '&'))
             {
-                Task*t = new Task();
+                Task* t = new Task();
                 return t;
             }
             k = k + 1;
@@ -215,7 +217,7 @@ Task*Parser::parseInput(std::string strInput)
     }
 
     //Create Task list to be "filled" according to user input
-    Task*tList = new TaskList();
+    Task* tList = new TaskList();
 
     ///iterate through input to find conditional statements ;, ||, &&, #, or \0
     for (unsigned int i = 0; i < (input.length() + 1); i++)

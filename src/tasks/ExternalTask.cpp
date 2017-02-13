@@ -23,18 +23,28 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExternalTask.h"
+#include <iostream>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
-ExternalTask::ExternalTask(char* p, char** a) : prog(p), args(a) {}
+ExternalTask::ExternalTask(char** a) : args(a) {}
 
-ExternalTask::ExternalTask(std::string p, std::vector<char*> a) : prog(&p[0]), args(&a[0]) {}
+ExternalTask::ExternalTask(std::vector<char*> a)
+{
+    unsigned long size = (a.back() ? a.size() + 1 : a.size());
+    this->args = new char*[size];
+
+    for (unsigned long i = 0; i < size - 1; ++i)
+    {
+        this->args[i] = a.at(i);
+    }
+
+    this->args[size - 1] = NULL;
+}
 
 ExternalTask::~ExternalTask()
 {
-    if (this->prog)
-    {
-        delete this->prog;
-    }
-
     if (this->args)
     {
         delete[] this->args;
@@ -43,5 +53,31 @@ ExternalTask::~ExternalTask()
 
 Task::EnumResult ExternalTask::run(Task::EnumResult r)
 {
-    return r; // TODO
+    pid_t childPid = fork();
+
+    if (childPid < 0)
+    {
+        perror("Error creating child process");
+        return Task::FAIL;
+    }
+    else if (childPid == 0)
+    {
+        if (execvp(this->args[0], this->args) < 0)
+        {
+            std::string error = "Error running command - ";
+            error += this->args[0];
+            perror(error.c_str());
+            return Task::FAIL;
+        }
+    }
+    else
+    {
+        int status;
+
+        waitpid(childPid, &status, 0);
+
+        std::cout << "DEBUG: Process returned " << WEXITSTATUS(status) << std::endl;
+    }
+
+    return Task::PASS;
 }
