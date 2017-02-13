@@ -22,42 +22,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
-#include "../headers/RShell.h"
-#include "../headers/Parser.h"
-#include <iostream>
-#include <stdexcept>
+#ifndef RSHELL_RSHELL_H
+#define RSHELL_RSHELL_H
 
-RShell::RShell() {}
+#include "tasks/Task.h"
 
-RShell::~RShell()
+class RShell
 {
-    if (this->task)
-    {
-        delete this->task;
-    }
-}
+    public:
+        RShell();
+        ~RShell();
+        void runLoop();
 
-void RShell::runLoop()
-{
-    std::string line = "";
-    Parser p;
+    private:
+        Task* task;
+};
 
-    while (line != "exit\n") // TODO change to always true
-    {
-        std::cout << "$ ";
-
-        std::getline(std::cin, line);
-
-        this->task = p.parseInput(line);
-
-        if (this->task)
-        {
-            this->task->run();
-            delete this->task;
-        }
-        else
-        {
-            std::cout << "ERROR: Received a NULL Task pointer from the parser!" << std::endl;
-        }
-    }
-}
+#endif //RSHELL_RSHELL_H

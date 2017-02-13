@@ -1,3 +1,5 @@
+#include "../headers/RShell.h"
+
 /******************************************************************************
  *  rshell
  *  Authors: Derek A. Sayler, Justin Doss
@@ -22,42 +24,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
-#include "../headers/RShell.h"
-#include "../headers/Parser.h"
-#include <iostream>
-#include <stdexcept>
-
-RShell::RShell() {}
-
-RShell::~RShell()
+int main()
 {
-    if (this->task)
-    {
-        delete this->task;
-    }
-}
+    RShell rShell;
 
-void RShell::runLoop()
-{
-    std::string line = "";
-    Parser p;
+    rShell.runLoop();
 
-    while (line != "exit\n") // TODO change to always true
-    {
-        std::cout << "$ ";
-
-        std::getline(std::cin, line);
-
-        this->task = p.parseInput(line);
-
-        if (this->task)
-        {
-            this->task->run();
-            delete this->task;
-        }
-        else
-        {
-            std::cout << "ERROR: Received a NULL Task pointer from the parser!" << std::endl;
-        }
-    }
+    return 0;
 }

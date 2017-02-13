@@ -33,7 +33,7 @@ class ExternalTask : public Task
 {
     public:
         ExternalTask(char** a);
-        ExternalTask(std::vector<char*> a);
+        ExternalTask(std::vector<std::string> a);
         ~ExternalTask();
         EnumResult run(EnumResult r);
 

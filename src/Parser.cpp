@@ -29,7 +29,7 @@ Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
 {
     unsigned int prevPos = 0;
     unsigned int nextPos = 0;
-    std::vector<char*> args; //Vector to hold arguments
+    std::vector<std::string> args; //Vector to hold arguments
 
     ///Find command
     for (unsigned int i = 0; i < (input.size() + 1); i++)
@@ -42,9 +42,7 @@ Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
         {
             std::string command = input.substr(prevPos, (i - prevPos));
             std::cout << "Command: " << command << std::endl; //TODO Delete this
-            char* com = new char[command.length() + 1];
-            std::strcpy(com, command.c_str());
-            args.push_back(com);
+            args.push_back(command);
             prevPos = i;
             break;
         }
@@ -80,9 +78,7 @@ Task* Parser::createCondTask(std::string input, Task::EnumResult r, Task* tList)
             {
                 std::string preArg = input.substr(nextPos, (j - nextPos + 1));
                 std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                char* arg = new char[preArg.length() + 1];
-                std::strcpy(arg, preArg.c_str());
-                args.push_back(arg);
+                args.push_back(preArg);
             }
         }
         else if (j == (input.size()))
@@ -103,7 +99,7 @@ Task* Parser::createTask(std::string input, Task* tList)
 {
     unsigned int prevPos = 0;
     unsigned int nextPos = 0;
-    std::vector<char*> args; //Vector to hold arguments
+    std::vector<std::string> args; //Vector to hold arguments
 
     ///Find command
     for (unsigned int i = 0; i < (input.size() + 1); i++)
@@ -116,9 +112,7 @@ Task* Parser::createTask(std::string input, Task* tList)
         {
             std::string command = input.substr(prevPos, (i - prevPos));
             std::cout << "Command: " << command << std::endl; //TODO Delete this
-            char* com = new char[command.length() + 1];
-            std::strcpy(com, command.c_str());
-            args.push_back(com);
+            args.push_back(command);
             prevPos = i;
             break;
         }
@@ -154,9 +148,7 @@ Task* Parser::createTask(std::string input, Task* tList)
             {
                 std::string preArg = input.substr(nextPos, (j - nextPos + 1));
                 std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                char* arg = new char[preArg.length() + 1];
-                std::strcpy(arg, preArg.c_str());
-                args.push_back(arg);
+                args.push_back(preArg);
             }
         }
         else if (j == (input.size()))

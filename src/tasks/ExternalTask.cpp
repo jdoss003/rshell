@@ -30,14 +30,15 @@
 
 ExternalTask::ExternalTask(char** a) : args(a) {}
 
-ExternalTask::ExternalTask(std::vector<char*> a)
+ExternalTask::ExternalTask(std::vector<std::string> a)
 {
-    unsigned long size = (a.back() ? a.size() + 1 : a.size());
+    unsigned long size = a.size() + 1;
     this->args = new char*[size];
 
     for (unsigned long i = 0; i < size - 1; ++i)
     {
-        this->args[i] = a.at(i);
+        this->args[i] = new char[a.at(i).length() + 1];
+        std::strcpy(this->args[i], a.at(i).c_str());
     }
 
     this->args[size - 1] = NULL;
@@ -73,9 +74,7 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
     else
     {
         int status;
-
         waitpid(childPid, &status, 0);
-
         std::cout << "DEBUG: Process returned " << WEXITSTATUS(status) << std::endl;
     }
 
