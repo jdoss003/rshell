@@ -23,10 +23,11 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExitTask.h"
+#include <cstdlib>
 
 ExitTask::ExitTask() {}
 
 Task::EnumResult ExitTask::run(Task::EnumResult r)
 {
-    return PASS; // TODO
+    std::exit(EXIT_SUCCESS);
 }
