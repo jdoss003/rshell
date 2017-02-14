@@ -1,5 +1,3 @@
-#include "../headers/RShell.h"
-
 /******************************************************************************
  *  rshell
  *  Authors: Derek A. Sayler, Justin Doss
@@ -23,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
+
+#include "../headers/RShell.h"
 
 int main()
 {

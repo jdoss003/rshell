@@ -25,6 +25,10 @@
 #ifndef RSHELL_RSHELL_H
 #define RSHELL_RSHELL_H
 
+#include <iostream>
+#include <stdexcept>
+
+#include "../headers/Parser.h"
 #include "tasks/Task.h"
 
 class RShell

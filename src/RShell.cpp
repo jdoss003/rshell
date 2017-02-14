@@ -23,9 +23,6 @@
  * ***************************************************************************/
 
 #include "../headers/RShell.h"
-#include "../headers/Parser.h"
-#include <iostream>
-#include <stdexcept>
 
 RShell::RShell() {}
 

@@ -25,8 +25,8 @@
 #ifndef RSHELL_TASKLIST_H
 #define RSHELL_TASKLIST_H
 
-#include "Task.h"
 #include <vector>
+#include "Task.h"
 
 class TaskList : public Task
 {

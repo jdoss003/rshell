@@ -25,6 +25,8 @@
 #ifndef RSHELL_TASK_H
 #define RSHELL_TASK_H
 
+#include <stdexcept>
+
 class Task
 {
     public:

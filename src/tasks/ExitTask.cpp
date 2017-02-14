@@ -23,7 +23,6 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExitTask.h"
-#include <cstdlib>
 
 ExitTask::ExitTask() {}
 

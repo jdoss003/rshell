@@ -23,10 +23,6 @@
  * ***************************************************************************/
 
 #include "../../headers/tasks/ExternalTask.h"
-#include <iostream>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
 
 ExternalTask::ExternalTask(char** a) : args(a) {}
 

@@ -25,12 +25,13 @@
 #ifndef RSHELL_PARSER_H
 #define RSHELL_PARSER_H
 
-#include <string>
-#include <stdio.h>
-#include <vector>
-#include <set>
 #include <iostream>
+#include <iomanip>
 #include <cstring>
+#include <set>
+#include <stdio.h>
+#include <string>
+#include <vector>
 
 #include "../headers/tasks/ConditionalTask.h"
 #include "../headers/tasks/TaskList.h"

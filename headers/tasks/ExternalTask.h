@@ -25,9 +25,13 @@
 #ifndef RSHELL_EXTERNALTASK_H
 #define RSHELL_EXTERNALTASK_H
 
-#include "Task.h"
+#include <iostream>
+#include <stdio.h>
 #include <string>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <vector>
+#include "Task.h"
 
 class ExternalTask : public Task
 {
