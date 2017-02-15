@@ -25,6 +25,7 @@
 #ifndef RSHELL_EXTERNALTASK_H
 #define RSHELL_EXTERNALTASK_H
 
+#include <cstring>
 #include <iostream>
 #include <stdio.h>
 #include <string>
