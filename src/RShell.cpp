@@ -24,6 +24,79 @@
 
 #include "../headers/RShell.h"
 
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+std::string getUserName()
+{
+    char* usr = NULL;
+    std::string userName = "";
+
+    usr = std::getenv("USERNAME");
+    if (usr)
+    {
+        userName.append(usr);
+        usr = NULL;
+    }
+    return userName;
+}
+
+std::string getHostName()
+{
+    char* hst = NULL;
+    std::string hostName = "";
+
+    hst = std::getenv("COMPUTERNAME");
+    if (hst)
+    {
+        hostName.append(hst);
+    }
+    return hostName;
+}
+#else
+std::string getUserName()
+{
+    char* usr = NULL;
+    std::string userName = "";
+
+    usr = std::getenv("USER");
+    if (usr)
+    {
+        userName.append(usr);
+    }
+    else
+    {
+        usr = new char[_POSIX_LOGIN_NAME_MAX];
+        if (getlogin_r(usr, _POSIX_LOGIN_NAME_MAX) == 0)
+        {
+            userName.append(usr);
+        }
+        delete[] usr;
+    }
+    return userName;
+}
+
+std::string getHostName()
+{
+    char* hst = NULL;
+    std::string hostName = "";
+
+    hst = std::getenv("COMPUTERNAME");
+    if (hst)
+    {
+        hostName.append(hst);
+    }
+    else
+    {
+        hst = new char[_POSIX_HOST_NAME_MAX];
+        if (gethostname(hst, _POSIX_HOST_NAME_MAX) == 0)
+        {
+            hostName.append(hst);
+        }
+        delete[] hst;
+    }
+    return hostName;
+}
+#endif
+
 RShell::RShell() {}
 
 RShell::~RShell()
@@ -36,11 +109,15 @@ RShell::~RShell()
 
 void RShell::runLoop()
 {
+    std::string user = getUserName();
+    std::string host = getHostName();
+
     std::string line = "";
+    std::string prompt = (!user.empty() && !host.empty() ? user + "@" + host + " $ " : "$ ");
 
     while (line != "exit\n") // TODO change to always true
     {
-        std::cout << "$ ";
+        std::cout << prompt;
 
         std::getline(std::cin, line);
 
