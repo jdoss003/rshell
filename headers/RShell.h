@@ -46,6 +46,10 @@ class RShell
 
     private:
         Task* task;
+        std::string userName;
+        std::string hostName;
+        std::string prompt;
+        std::string input;
 };
 
 #endif //RSHELL_RSHELL_H

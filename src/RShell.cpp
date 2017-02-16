@@ -97,7 +97,7 @@ std::string getHostName()
 }
 #endif
 
-RShell::RShell() {}
+RShell::RShell() : task(NULL), userName(""), hostName(""), prompt(""), input("") {}
 
 RShell::~RShell()
 {
@@ -105,23 +105,23 @@ RShell::~RShell()
     {
         delete this->task;
     }
+    return;
 }
 
 void RShell::runLoop()
 {
-    std::string user = getUserName();
-    std::string host = getHostName();
+    this->userName = getUserName();
+    this->hostName = getHostName();
 
-    std::string line = "";
-    std::string prompt = (!user.empty() && !host.empty() ? user + "@" + host + " $ " : "$ ");
+    this->prompt = (!this->userName.empty() && !this->hostName.empty() ? this->userName + "@" + this->hostName + " $ " : "$ ");
 
-    while (line != "exit\n") // TODO change to always true
+    while (true)
     {
         std::cout << prompt;
 
-        std::getline(std::cin, line);
+        std::getline(std::cin, this->input);
 
-        this->task = Parser::parseInput(line);
+        this->task = Parser::parseInput(this->input);
 
         if (this->task)
         {

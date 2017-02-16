@@ -26,7 +26,7 @@
 
 int main()
 {
-    RShell rShell;
+    static RShell rShell;
 
     rShell.runLoop();
 

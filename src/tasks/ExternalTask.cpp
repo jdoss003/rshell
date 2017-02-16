@@ -71,7 +71,11 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
     {
         int status;
         waitpid(childPid, &status, 0);
-        std::cout << "DEBUG: Process returned " << WEXITSTATUS(status) << std::endl;
+
+        if (status && WIFEXITED(status))
+        {
+            std::cout << "DEBUG: Process returned " << WEXITSTATUS(status) << std::endl;
+        }
     }
 
     return Task::PASS;
