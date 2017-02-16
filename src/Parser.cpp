@@ -27,58 +27,68 @@
 ///////////Creates a task when a command and arguments end with a ";" or '/0'.//////////////////
 Task* createTask(std::string input)
 {
-    unsigned int prevPos = 0;
-    unsigned int nextPos = 0;
-    std::vector<std::string> args; //Vector to hold arguments
+    unsigned long i = 0;
+    unsigned long prevPos = 0;
+    std::vector<std::string> args; // Vector to hold arguments
 
     ///Find command
-    for (unsigned int i = 0; i < (input.size() + 1); i++)
+    for (; i < input.size(); ++i)
     {
-        if (input[i] == ' ' && i == 0)
+        if (input[i] == ' ') //a space signals the end of a command. Create command string
         {
-            prevPos = i + 1;
-        }
-        else if (input[i] == ' ' && isalnum(input[i - 1])) //a space signals the end of a command. Create command string
-        {
-            std::string command = input.substr(prevPos, (i - prevPos));
+            std::string command = input.substr(prevPos, i - prevPos);
             std::cout << "Command: " << command << std::endl; //TODO Delete this
-            args.push_back(command);
-            prevPos = i;
-            break;
-        }
 
-        else if (i == prevPos) //If it reaches position of conditional statement
-        {
-            std::cout << "Exit: " << input << std::endl; //TODO Delete this
-
-            ///Test if exit command is given
-            if (!input.compare("exit"))
+            if (command.compare("exit") == 0)
             {
+                // TODO print error
                 return new ExitTask();
             }
+
+            args.push_back(command);
+            prevPos = i + 1;
+            ++i;
+            break;
         }
     }
 
-    ///Find arguments
-    for (unsigned int j = prevPos; j < (input.size() + 1); j++)
+    if (i == input.size())
     {
-        if (input[j] == ' ')
+        std::string command = input.substr(prevPos, i - prevPos);
+        std::cout << "Command: " << command << std::endl; //TODO Delete this
+
+        if (command.compare("exit") == 0)
         {
-            if (isalnum(input[j + 1]) || input[j + 1] == '-')
-            {
-                nextPos = j + 1;
-            }
-            continue;
+            return new ExitTask();
         }
-        else if (isalnum(input[j]) || input[j] == '-')
+
+        args.push_back(command);
+        return new ExternalTask(args);
+    }
+
+    ///Find arguments
+    for (; i < input.size(); ++i)
+    {
+        if (input[i] == '\"')
         {
-            if (input[j + 1] == ' ' || input[j + 1] == '\0')
-            {
-                std::string preArg = input.substr(nextPos, (j - nextPos + 1));
-                std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-                args.push_back(preArg);
-            }
+            unsigned long next = input.find('\"', i + 1);
+
+            i = next;
         }
+        else if (input[i] == ' ')
+        {
+            std::string preArg = input.substr(prevPos, i - prevPos);
+            std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
+            args.push_back(preArg);
+            prevPos = i + 1;
+        }
+    }
+
+    if (i > prevPos)
+    {
+        std::string preArg = input.substr(prevPos, i - prevPos);
+        std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
+        args.push_back(preArg);
     }
 
     return new ExternalTask(args);
@@ -93,140 +103,185 @@ Task* createCondTask(std::string input, Task::EnumResult r)
 /////////////////////*Main Parser Function*////////////////////////
 Task* Parser::parseInput(std::string strInput)
 {
-    //variable used for tracking position of last conditional statement
-    unsigned int prevCond = 0;
+    std::string input = strInput;
 
-    //Flags used to see if input is after a conditional statement. only one should be true at a given time
-    bool orFlg = false;
-    bool andFlg = false;
-
-    std::string input;
-
-    ///Error and comment checking
-    if (strInput.size() == 0)
+    for (unsigned long i = 0; i < input.length(); ++i)
     {
-        return new Task();
-    }
-    for (unsigned int k = 0; k < strInput.length(); k++)
-    {
-        ///check if any "#"
-        if (strInput[k] == '#')//remove all input after "#" if found
+        if (input[i] == '\"')
         {
-            input = strInput.substr(prevCond, (k - prevCond));
-            if (input.empty())
+            unsigned long next = input.find('\"', i + 1);
+
+            if (next == std::string::npos)
             {
-                Task* t = new Task();
-                return t;
+                std::cout << "Error: Found unmatched quote!" << std::endl;
+                std::cout << input << std::endl;
+                std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
+                return new Task();
             }
+
+            i = next;
+        }
+        else if (input[i] == '|' || input[i] == '&')
+        {
+            if (i + 1 < input.length() &&
+                    ((input[i] == '|' && input[i + 1] == '|') || (input[i] == '&' && input[i + 1] == '&')))
+            {
+                ++i;
+            }
+            else
+            {
+                std::cout << "Error: Found invalid connector!" << std::endl;
+                std::cout << input << std::endl;
+                std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
+                return new Task();
+            }
+        }
+        else if (input[i] == '#')
+        {
             break;
         }
-
-            ///Check if there is just one "|" or "&"
-        else if (strInput[k] == '|' || strInput[k] == '&')
-        {
-            if (!(strInput[k + 1] == '|' || strInput[k + 1] == '&'))
-            {
-                Task* t = new Task();
-                return t;
-            }
-            k = k + 1;
-        }
-
-        input = strInput;
     }
+
+    for (unsigned long i = 0; i < input.length(); ++i)
+    {
+        if (input[i] == '\"')
+        {
+            unsigned long next = input.find('\"', i + 1);
+
+            i = next;
+        }
+        else if (input[i] == '#')
+        {
+            input = strInput.substr(0, i);
+        }
+        else if (isspace(input[i]))
+        {
+            input[i] = ' ';
+
+            if (i + 1 < input.length() && isspace(input[i + 1]))
+            {
+                while (i + 1 < input.length() && isspace(input[i + 1]))
+                {
+                    input.erase(i + 1, 1);
+                }
+            }
+
+            if (i - 1 > 0 && (input[i - 1] == '|' || input[i - 1] == '&' || input[i - 1] == ';'))
+            {
+                input.erase(i, 1);
+                --i;
+            }
+            else if (i + 1 < input.length() && (input[i + 1] == '|' || input[i + 1] == '&' || input[i + 1] == ';'))
+            {
+                input.erase(i, 1);
+                --i;
+            }
+        }
+    }
+
+    if (input.length() > 0 && isspace(input[0]))
+    {
+        input.erase(0, 1);
+    }
+
+    if (input.length() > 0 && isspace(input[input.length()]))
+    {
+        input.erase(input.length(), 1);
+    }
+
+    std::cout << "Input after cleanup: " << input << std::endl;
 
     //Create Task list to be "filled" according to user input
     Task* tList = new TaskList();
 
-    ///iterate through input to find conditional statements ;, ||, &&, #, or \0
-    for (unsigned int i = 0; i < (input.length() + 1); i++)
+    unsigned long i = 0;
+    unsigned long prevCond = 0;
+
+    bool condition = false;
+    bool orFlg    = false;
+
+    ///iterate through input to find conditional statements ;, ||, &&
+    for (; i < input.length(); ++i)
     {
-
-        ///Finds a ";" or '\0'
-        if (input[i] == ';' || input[i] == '\0') //If normal command
+        if (input[i] == '\"')
         {
-            if (orFlg)
-            {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
-                prevCond = i + 2;
-                orFlg = false; //set both flags to false
-                andFlg = false;
+            unsigned long next = input.find('\"', i + 1);
 
-            }
-            else if (andFlg)
+            i = next;
+        }
+        else if (input[i] == ';')
+        {
+            if (i - prevCond < 1)
             {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
-                prevCond = i + 2;
-                orFlg = false; //set both flags to false
-                andFlg = false;
+                // TODO print error
+            }
+
+            std::string cmd = input.substr(prevCond, i - prevCond);
+
+            if (condition)
+            {
+                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
             }
             else
             {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createTask(str)); //Create task
-                prevCond = i + 2;
+                tList->addSubtask(createTask(cmd));
             }
+
+            condition = false;
+            prevCond = i + 1;
         }
-
-            ///Finds a "&"
-        else if (input[i] == '&')
-        {
-            if (orFlg)
-            {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
-                prevCond = i + 2;
-                orFlg = false;
-                andFlg = true;
-
-            }
-            else if (andFlg)
-            {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
-                prevCond = i + 2;
-            }
-            else
-            {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createTask(str)); //Create task
-                prevCond = i + 2;
-                andFlg = true;
-            }
-
-            i = i + 1; //Skip second "&"
-        }
-
-            ///Finds a "|"
         else if (input[i] == '|')
         {
-            if (orFlg)
+            if (i - prevCond < 1)
             {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::FAIL)); //Create conditional task
-                prevCond = i + 2;
-
+                // TODO print error
             }
-            else if (andFlg)
+
+            std::string cmd = input.substr(prevCond, i - prevCond);
+
+            if (condition)
             {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createCondTask(str, Task::PASS)); //Create conditional task
-                prevCond = i + 2;
-                andFlg = false;
-                orFlg = true;
+                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
             }
             else
             {
-                std::string str = input.substr(prevCond, (i - prevCond));
-                tList->addSubtask(createTask(str)); //Create conditional task
-                prevCond = i + 2;
-                orFlg = true;
+                tList->addSubtask(createTask(cmd));
             }
 
-            i = i + 1; //Skip second "|"
+            condition = true;
+            orFlg = true;
+            prevCond = i + 2;
+            ++i;
         }
+        else if (input[i] == '&')
+        {
+            if (i - prevCond < 1)
+            {
+                // TODO print error
+            }
+
+            std::string cmd = input.substr(prevCond, i - prevCond);
+
+            if (condition)
+            {
+                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+            }
+            else
+            {
+                tList->addSubtask(createTask(cmd));
+            }
+
+            condition = true;
+            orFlg = false;
+            prevCond = i + 2;
+            ++i;
+        }
+    }
+
+    if (i > prevCond)
+    {
+        std::string cmd = input.substr(prevCond, i - prevCond);
+        tList->addSubtask(createTask(cmd));
     }
 
     return tList;
