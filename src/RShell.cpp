@@ -93,6 +93,17 @@ std::string getHostName()
         }
         delete[] hst;
     }
+
+    if (!hostName.empty())
+    {
+        unsigned long i = hostName.find('.');
+
+        if (i != std::string::npos)
+        {
+            hostName = hostName.substr(0, i);
+        }
+    }
+
     return hostName;
 }
 #endif
