@@ -41,5 +41,5 @@ Task::EnumResult ConditionalTask::run(Task::EnumResult r)
         return this->task->run(r);
     }
 
-    return r; // TODO check of this should be r or PASS
+    return SKIP;
 }

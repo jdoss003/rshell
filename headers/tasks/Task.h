@@ -32,7 +32,7 @@ class Task
     public:
         Task();
         virtual ~Task();
-        enum EnumResult {PASS, FAIL};
+        enum EnumResult {PASS, FAIL, SKIP};
 
         void run();
         virtual EnumResult run(EnumResult);
