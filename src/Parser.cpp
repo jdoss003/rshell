@@ -34,28 +34,56 @@ Task* createTask(std::string input)
     ///Find command
     for (; i < input.size(); ++i)
     {
-        if (input[i] == ' ') //a space signals the end of a command. Create command string
+        if (input[i] == '\"')
+        {
+            if (int(i - 1) >= 0 && input[i - 1] == '\\')
+            {
+                input.erase(i - 1, 1);
+                --i;
+            }
+            else
+            {
+                input.erase(i, 1);
+
+                for (unsigned long j = i; j < input.length(); ++j)
+                {
+                    if (input[j] == '\"')
+                    {
+                        if (int(j - 1) >= 0 && input[j - 1] == '\\')
+                        {
+                            input.erase(j - 1, 1);
+                            --j;
+                        }
+                        else
+                        {
+                            input.erase(j, 1);
+                            i = j - 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else if (input[i] == ' ') //a space signals the end of a command. Create command string
         {
             std::string command = input.substr(prevPos, i - prevPos);
-            std::cout << "Command: " << command << std::endl; //TODO Delete this
+            std::cout << "Arg: " << command << std::endl; //TODO Delete this
 
-            if (command.compare("exit") == 0)
+            if (args.size() == 0 && command.compare("exit") == 0)
             {
-                // TODO print error
+                std::cout << "WARNING: Exit command does not have any arguments!" << std::endl;
                 return new ExitTask();
             }
 
             args.push_back(command);
             prevPos = i + 1;
-            ++i;
-            break;
         }
     }
 
-    if (i == input.size())
+    if (i > prevPos)
     {
         std::string command = input.substr(prevPos, i - prevPos);
-        std::cout << "Command: " << command << std::endl; //TODO Delete this
+        std::cout << "Arg: " << command << std::endl; //TODO Delete this
 
         if (command.compare("exit") == 0)
         {
@@ -63,32 +91,6 @@ Task* createTask(std::string input)
         }
 
         args.push_back(command);
-        return new ExternalTask(args);
-    }
-
-    ///Find arguments
-    for (; i < input.size(); ++i)
-    {
-        if (input[i] == '\"')
-        {
-            unsigned long next = input.find('\"', i + 1);
-
-            i = next;
-        }
-        else if (input[i] == ' ')
-        {
-            std::string preArg = input.substr(prevPos, i - prevPos);
-            std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-            args.push_back(preArg);
-            prevPos = i + 1;
-        }
-    }
-
-    if (i > prevPos)
-    {
-        std::string preArg = input.substr(prevPos, i - prevPos);
-        std::cout << "Arg: " << preArg << std::endl; //TODO Delete this
-        args.push_back(preArg);
     }
 
     return new ExternalTask(args);
@@ -109,17 +111,33 @@ Task* Parser::parseInput(std::string strInput)
     {
         if (input[i] == '\"')
         {
-            unsigned long next = input.find('\"', i + 1);
-
-            if (next == std::string::npos)
+            if (int(i - 1) >= 0 && input[i - 1] == '\\')
             {
-                std::cout << "Error: Found unmatched quote!" << std::endl;
-                std::cout << input << std::endl;
-                std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
-                return new Task();
+                continue;
             }
+            else
+            {
+                unsigned long j = i + 1;
+                for (; j < input.length(); ++j)
+                {
+                    if (input[j] == '\"')
+                    {
+                        if (int(j - 1) < 0 || input[j - 1] != '\\')
+                        {
+                            i = j;
+                            break;
+                        }
+                    }
+                }
 
-            i = next;
+                if (j == input.length())
+                {
+                    std::cout << "Error: Found unmatched quote!" << std::endl;
+                    std::cout << input << std::endl;
+                    std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
+                    return new Task();
+                }
+            }
         }
         else if (input[i] == '|' || input[i] == '&')
         {
@@ -146,9 +164,17 @@ Task* Parser::parseInput(std::string strInput)
     {
         if (input[i] == '\"')
         {
-            unsigned long next = input.find('\"', i + 1);
-
-            i = next;
+            for (unsigned long j = i + 1; j < input.length(); ++j)
+            {
+                if (input[j] == '\"')
+                {
+                    if (int(j - 1) < 0 || input[j - 1] != '\\')
+                    {
+                        i = j;
+                        break;
+                    }
+                }
+            }
         }
         else if (input[i] == '#')
         {
@@ -205,26 +231,36 @@ Task* Parser::parseInput(std::string strInput)
     {
         if (input[i] == '\"')
         {
-            unsigned long next = input.find('\"', i + 1);
-
-            i = next;
+            for (unsigned long j = i + 1; j < input.length(); ++j)
+            {
+                if (input[j] == '\"')
+                {
+                    if (int(j - 1) < 0 || input[j - 1] != '\\')
+                    {
+                        i = j;
+                        break;
+                    }
+                }
+            }
         }
         else if (input[i] == ';')
         {
             if (i - prevCond < 1)
             {
-                // TODO print error
-            }
-
-            std::string cmd = input.substr(prevCond, i - prevCond);
-
-            if (condition)
-            {
-                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                tList->addSubtask(new Task());
             }
             else
             {
-                tList->addSubtask(createTask(cmd));
+                std::string cmd = input.substr(prevCond, i - prevCond);
+
+                if (condition)
+                {
+                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                }
+                else
+                {
+                    tList->addSubtask(createTask(cmd));
+                }
             }
 
             condition = false;
@@ -234,18 +270,20 @@ Task* Parser::parseInput(std::string strInput)
         {
             if (i - prevCond < 1)
             {
-                // TODO print error
-            }
-
-            std::string cmd = input.substr(prevCond, i - prevCond);
-
-            if (condition)
-            {
-                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                tList->addSubtask(new Task());
             }
             else
             {
-                tList->addSubtask(createTask(cmd));
+                std::string cmd = input.substr(prevCond, i - prevCond);
+
+                if (condition)
+                {
+                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                }
+                else
+                {
+                    tList->addSubtask(createTask(cmd));
+                }
             }
 
             condition = true;
@@ -257,18 +295,20 @@ Task* Parser::parseInput(std::string strInput)
         {
             if (i - prevCond < 1)
             {
-                // TODO print error
-            }
-
-            std::string cmd = input.substr(prevCond, i - prevCond);
-
-            if (condition)
-            {
-                tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                tList->addSubtask(new Task());
             }
             else
             {
-                tList->addSubtask(createTask(cmd));
+                std::string cmd = input.substr(prevCond, i - prevCond);
+
+                if (condition)
+                {
+                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                }
+                else
+                {
+                    tList->addSubtask(createTask(cmd));
+                }
             }
 
             condition = true;
