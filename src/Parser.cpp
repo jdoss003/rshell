@@ -67,7 +67,7 @@ Task* createTask(std::string input)
         else if (input[i] == ' ') //a space signals the end of a command. Create command string
         {
             std::string command = input.substr(prevPos, i - prevPos);
-            std::cout << "Arg: " << command << std::endl; //TODO Delete this
+            //std::cout << "Arg: " << command << std::endl;
 
             if (args.size() == 0 && command.compare("exit") == 0)
             {
@@ -83,7 +83,7 @@ Task* createTask(std::string input)
     if (i > prevPos)
     {
         std::string command = input.substr(prevPos, i - prevPos);
-        std::cout << "Arg: " << command << std::endl; //TODO Delete this
+        //std::cout << "Arg: " << command << std::endl;
 
         if (command.compare("exit") == 0)
         {
@@ -215,7 +215,7 @@ Task* Parser::parseInput(std::string strInput)
         input.erase(input.length(), 1);
     }
 
-    std::cout << "Input after cleanup: " << input << std::endl;
+//    std::cout << "Input after cleanup: " << input << std::endl;
 
     //Create Task list to be "filled" according to user input
     Task* tList = new TaskList();
