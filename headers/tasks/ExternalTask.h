@@ -29,10 +29,15 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
 #include "Task.h"
+
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+
+#else
+#include <sys/wait.h>
+#endif
 
 class ExternalTask : public Task
 {

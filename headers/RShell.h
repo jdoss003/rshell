@@ -31,8 +31,9 @@
 #include "../headers/Parser.h"
 #include "tasks/Task.h"
 
-#if !defined(WIN32) && !defined(_WIN32) && !defined(_WIN64)
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 
+#else
 #include <limits.h>
 #include <unistd.h>
 #endif

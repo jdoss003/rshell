@@ -48,6 +48,12 @@ ExternalTask::~ExternalTask()
     }
 }
 
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+Task::EnumResult ExternalTask::run(Task::EnumResult r)
+{
+    retrun r;
+}
+#else
 Task::EnumResult ExternalTask::run(Task::EnumResult r)
 {
     pid_t childPid = fork();
@@ -80,3 +86,4 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
 
     return Task::PASS;
 }
+#endif
