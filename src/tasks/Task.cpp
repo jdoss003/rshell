@@ -40,5 +40,5 @@ void Task::addSubtask(Task* t)
 
 Task::EnumResult Task::run(Task::EnumResult r)
 {
-    return FAIL;
+    return r;
 }

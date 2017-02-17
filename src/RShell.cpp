@@ -105,7 +105,6 @@ RShell::~RShell()
     {
         delete this->task;
     }
-    return;
 }
 
 void RShell::runLoop()
