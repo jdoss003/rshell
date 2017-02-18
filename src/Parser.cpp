@@ -231,9 +231,9 @@ Task* Parser::parseInput(std::string strInput)
     }
 
     // erase unnecessary space at end
-    if (input.length() > 0 && isspace(input[input.length()]))
+    if (input.length() > 0 && isspace(input[input.length() - 1]))
     {
-        input.erase(input.length(), 1);
+        input.erase(input.length() - 1, 1);
     }
 
 //    std::cout << "Input after cleanup: " << input << std::endl;
