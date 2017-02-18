@@ -10,5 +10,17 @@ fi
 echo test;
 echo second
 echo "quotes"
+echo \"all one quote\"
+echo "one quote
+echo /"one quote
+mkdir test
+git status
+touch test.txt
+ls -a
+echoe fail
+||||||||&&&&&&&&;;;;
+|||||||&&&&&&&;;;
+|| || || || && && && ; ;
+|| || || || && && && ; echo test
 exit
 EOF
