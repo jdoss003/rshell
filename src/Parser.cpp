@@ -24,39 +24,45 @@
 
 #include "../headers/Parser.h"
 
-///////////Creates a task when a command and arguments end with a ";" or '/0'.//////////////////
+/*
+ * Creates a task when a command and arguments
+ * @param input is the string of command and arguments
+ *
+ * @returns a Task object that will execute the command and arguments
+ */
 Task* createTask(std::string input)
 {
     unsigned long i = 0;
     unsigned long prevPos = 0;
     std::vector<std::string> args; // Vector to hold arguments
 
-    ///Find command
+    // Separate arguments
     for (; i < input.size(); ++i)
     {
         if (input[i] == '\"')
         {
-            if (int(i - 1) >= 0 && input[i - 1] == '\\')
+            if (int(i - 1) >= 0 && input[i - 1] == '\\') // found \"
             {
-                input.erase(i - 1, 1);
+                input.erase(i - 1, 1); // remove the slash
                 --i;
             }
-            else
+            else // found "
             {
-                input.erase(i, 1);
+                input.erase(i, 1); // remove the " so it becomes a "
 
+                // need to find the next "
                 for (unsigned long j = i; j < input.length(); ++j)
                 {
                     if (input[j] == '\"')
                     {
-                        if (int(j - 1) >= 0 && input[j - 1] == '\\')
+                        if (int(j - 1) >= 0 && input[j - 1] == '\\') // found a \" inside quotes
                         {
-                            input.erase(j - 1, 1);
+                            input.erase(j - 1, 1); // remove the \ so it becomes a "
                             --j;
                         }
-                        else
+                        else // found the next "
                         {
-                            input.erase(j, 1);
+                            input.erase(j, 1); // remove the "
                             i = j - 1;
                             break;
                         }
@@ -64,52 +70,64 @@ Task* createTask(std::string input)
                 }
             }
         }
-        else if (input[i] == ' ') //a space signals the end of a command. Create command string
+        else if (input[i] == ' ') // found a space; signals the end of an arg
         {
-            std::string command = input.substr(prevPos, i - prevPos);
+            std::string command = input.substr(prevPos, i - prevPos); // copy arg to new string
             //std::cout << "Arg: " << command << std::endl;
 
-            if (args.size() == 0 && command.compare("exit") == 0)
+            if (args.size() == 0 && command.compare("exit") == 0) // if the first arg is "exit" return exit task
             {
                 std::cout << "WARNING: Exit command does not have any arguments!" << std::endl;
                 return new ExitTask();
             }
 
-            args.push_back(command);
+            args.push_back(command); // add arg to vector
             prevPos = i + 1;
         }
     }
 
-    if (i > prevPos)
+    if (i > prevPos) // there is no space at the end to we may need to catch the last arg
     {
-        std::string command = input.substr(prevPos, i - prevPos);
+        std::string command = input.substr(prevPos, i - prevPos); // copy arg to new string
         //std::cout << "Arg: " << command << std::endl;
 
-        if (command.compare("exit") == 0)
+        if (command.compare("exit") == 0) // if the first arg is "exit" return exit task
         {
             return new ExitTask();
         }
 
-        args.push_back(command);
+        args.push_back(command); // add arg to vector
     }
 
-    return new ExternalTask(args);
+    return new ExternalTask(args); // return task
 }
 
-////////Creates a task when a command and arguments end with either a "||" or "&&"//////////
+/*
+ * Creates a task when a command and arguments
+ * @param input is the string of command and arguments
+ * @param r is the desired result of the on which the task should be run
+ *
+ * @returns a conditional Task object that will execute the command and arguments
+ */
 Task* createCondTask(std::string input, Task::EnumResult r)
 {
     return new ConditionalTask(createTask(input), r);
 }
 
-/////////////////////*Main Parser Function*////////////////////////
+/*
+ * Converts the input into a task object that can be run
+ * @param input is the string of command and arguments
+ *
+ * @returns a task object that will execute the commands from the input
+ */
 Task* Parser::parseInput(std::string strInput)
 {
-    std::string input = strInput;
+    std::string input = strInput; // preserve original string in case it is needed
 
+    // first check for errors in input
     for (unsigned long i = 0; i < input.length(); ++i)
     {
-        if (input[i] == '\"')
+        if (input[i] == '\"') // check that quotes are in pairs
         {
             if (int(i - 1) >= 0 && input[i - 1] == '\\')
             {
@@ -139,7 +157,7 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
         }
-        else if (input[i] == '|' || input[i] == '&')
+        else if (input[i] == '|' || input[i] == '&') // make sure connectors are in pairs and correct
         {
             if (i + 1 < input.length() &&
                     ((input[i] == '|' && input[i + 1] == '|') || (input[i] == '&' && input[i + 1] == '&')))
@@ -154,15 +172,16 @@ Task* Parser::parseInput(std::string strInput)
                 return new Task();
             }
         }
-        else if (input[i] == '#')
+        else if (input[i] == '#') // we do not care about anything after comments
         {
             break;
         }
     }
 
+    // pre-process the input input
     for (unsigned long i = 0; i < input.length(); ++i)
     {
-        if (input[i] == '\"')
+        if (input[i] == '\"') // skip over stuff in quotes
         {
             for (unsigned long j = i + 1; j < input.length(); ++j)
             {
@@ -176,11 +195,11 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
         }
-        else if (input[i] == '#')
+        else if (input[i] == '#') // delete anything after comment
         {
             input = strInput.substr(0, i);
         }
-        else if (isspace(input[i]))
+        else if (isspace(input[i])) // remove extra spaces
         {
             input[i] = ' ';
 
@@ -205,11 +224,13 @@ Task* Parser::parseInput(std::string strInput)
         }
     }
 
+    // erase unnecessary space at beginning
     if (input.length() > 0 && isspace(input[0]))
     {
         input.erase(0, 1);
     }
 
+    // erase unnecessary space at end
     if (input.length() > 0 && isspace(input[input.length()]))
     {
         input.erase(input.length(), 1);
@@ -217,7 +238,7 @@ Task* Parser::parseInput(std::string strInput)
 
 //    std::cout << "Input after cleanup: " << input << std::endl;
 
-    //Create Task list to be "filled" according to user input
+    // Create task list to be filled according to the input
     Task* tList = new TaskList();
 
     unsigned long i = 0;
@@ -226,10 +247,10 @@ Task* Parser::parseInput(std::string strInput)
     bool condition = false;
     bool orFlg    = false;
 
-    ///iterate through input to find conditional statements ;, ||, &&
+    // iterate through input to break it into tasks
     for (; i < input.length(); ++i)
     {
-        if (input[i] == '\"')
+        if (input[i] == '\"') // skip over quotes
         {
             for (unsigned long j = i + 1; j < input.length(); ++j)
             {
@@ -243,17 +264,17 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
         }
-        else if (input[i] == ';')
+        else if (input[i] == ';') // found a normal connector
         {
-            if (i - prevCond < 1)
+            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
             {
                 tList->addSubtask(new Task());
             }
             else
             {
-                std::string cmd = input.substr(prevCond, i - prevCond);
+                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
 
-                if (condition)
+                if (condition) // make a conditional task or normal task from input
                 {
                     tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
                 }
@@ -263,20 +284,20 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
 
-            condition = false;
+            condition = false; // set conditions for next command
             prevCond = i + 1;
         }
-        else if (input[i] == '|')
+        else if (input[i] == '|') // found the on fail connector
         {
-            if (i - prevCond < 1)
+            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
             {
                 tList->addSubtask(new Task());
             }
             else
             {
-                std::string cmd = input.substr(prevCond, i - prevCond);
+                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
 
-                if (condition)
+                if (condition) // make a conditional task or normal task from input
                 {
                     tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
                 }
@@ -286,22 +307,22 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
 
-            condition = true;
+            condition = true; // set conditions for next command
             orFlg = true;
             prevCond = i + 2;
             ++i;
         }
-        else if (input[i] == '&')
+        else if (input[i] == '&') // found the on pass connector
         {
-            if (i - prevCond < 1)
+            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
             {
                 tList->addSubtask(new Task());
             }
             else
             {
-                std::string cmd = input.substr(prevCond, i - prevCond);
+                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
 
-                if (condition)
+                if (condition) // make a conditional task or normal task from input
                 {
                     tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
                 }
@@ -311,18 +332,26 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
 
-            condition = true;
+            condition = true; // set conditions for next command
             orFlg = false;
             prevCond = i + 2;
             ++i;
         }
     }
 
-    if (i > prevCond)
+    if (i > prevCond) // no space at the end so we have to catch the last command
     {
-        std::string cmd = input.substr(prevCond, i - prevCond);
-        tList->addSubtask(createTask(cmd));
+        std::string cmd = input.substr(prevCond, i - prevCond); // separate command
+
+        if (condition) // make a conditional task or normal task from input
+        {
+            tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+        }
+        else
+        {
+            tList->addSubtask(createTask(cmd));
+        }
     }
 
-    return tList;
+    return tList; // return the task object
 }

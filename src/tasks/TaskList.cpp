@@ -39,6 +39,11 @@ TaskList::~TaskList()
     }
 }
 
+/*
+ * Runs all the sub-tasks in order
+ * @param r is the EnumResult from the previously run task which is passed to the first sub-task
+ * @returns the EnumResult of the last sub-task that is run
+ */
 Task::EnumResult TaskList::run(Task::EnumResult r)
 {
     for (unsigned int i = 0; i < this->subtasks.size(); ++i)
@@ -49,6 +54,10 @@ Task::EnumResult TaskList::run(Task::EnumResult r)
     return r;
 }
 
+/*
+ * Adds sub-task to the task list
+ * @param t is the task to be added
+ */
 void TaskList::addSubtask(Task* t)
 {
     this->subtasks.push_back(t);

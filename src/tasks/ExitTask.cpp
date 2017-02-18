@@ -26,6 +26,10 @@
 
 ExitTask::ExitTask() {}
 
+/*
+ * Exits the rshell program
+ * @param r is the EnumResult from the previously run task (not used)
+ */
 Task::EnumResult ExitTask::run(Task::EnumResult r)
 {
     std::exit(EXIT_SUCCESS);

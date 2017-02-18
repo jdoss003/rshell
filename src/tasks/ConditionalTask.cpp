@@ -24,6 +24,11 @@
 
 #include "../../headers/tasks/ConditionalTask.h"
 
+/*
+ * Constructor for ConditionalTask
+ * @param t is the child task to run
+ * @param r is the desired result on which the child task should be run
+ */
 ConditionalTask::ConditionalTask(Task* t, Task::EnumResult r) : task(t), result(r) {}
 
 ConditionalTask::~ConditionalTask()
@@ -34,12 +39,20 @@ ConditionalTask::~ConditionalTask()
     }
 }
 
+/*
+ * Runs the child task when given the desired EnumResult
+ * @param r is the EnumResult from the previously run task
+ *
+ * @return when given the desired result, this will return the result
+ *         of the child task, otherwise this will return EnumResult::SKIP
+ */
 Task::EnumResult ConditionalTask::run(Task::EnumResult r)
 {
-    if (r == this->result)
+    if (r == this->result) // run child task on desired result
     {
         return this->task->run(r);
     }
 
+    // condition was not true; skip any dependent conditional tasks
     return SKIP;
 }

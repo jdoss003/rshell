@@ -28,17 +28,29 @@ Task::Task() {}
 
 Task::~Task() {}
 
+/*
+ * Public function to run the task object
+ */
 void Task::run()
 {
-    this->run(PASS);
+    this->run(SKIP);
 }
 
+/*
+ * Basic run implementation
+ * @param r is the EnumResult from the previously run task (not used)
+ * @returns EnumResult::SKIP
+ */
+Task::EnumResult Task::run(Task::EnumResult r)
+{
+    return SKIP;
+}
+
+/*
+ * Should only be called on derived objects that override this function
+ * Throws an error of called
+ */
 void Task::addSubtask(Task* t)
 {
     throw new std::runtime_error("ERROR: Tried to add a subtask to a non TaskList object!");
-}
-
-Task::EnumResult Task::run(Task::EnumResult r)
-{
-    return r;
 }

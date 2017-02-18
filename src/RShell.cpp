@@ -25,6 +25,9 @@
 #include "../headers/RShell.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+/*
+ * Returns the name of the current logged in user
+ */
 std::string getUserName()
 {
     char* usr = NULL;
@@ -39,6 +42,9 @@ std::string getUserName()
     return userName;
 }
 
+/*
+ * Returns the name of the current host machine
+ */
 std::string getHostName()
 {
     char* hst = NULL;
@@ -52,6 +58,9 @@ std::string getHostName()
     return hostName;
 }
 #else
+/*
+ * Returns the name of the current logged in user
+ */
 std::string getUserName()
 {
     char* usr = NULL;
@@ -74,6 +83,9 @@ std::string getUserName()
     return userName;
 }
 
+/*
+ * Returns the name of the current host machine
+ */
 std::string getHostName()
 {
     char* hst = NULL;
@@ -118,6 +130,9 @@ RShell::~RShell()
     }
 }
 
+/*
+ * This id the program's "main" loop
+ */
 void RShell::runLoop()
 {
     this->userName = getUserName();
