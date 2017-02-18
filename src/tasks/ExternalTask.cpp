@@ -103,7 +103,7 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
 
         }
 
-        if (errno != 0)
+        if (errno != 0 && errno != ECHILD)
         {
             perror("waitpid: ");
         }
