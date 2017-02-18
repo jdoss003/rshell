@@ -90,18 +90,30 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
             std::string error = "Error running command - ";
             error += this->args[0];
             perror(error.c_str());
-            return Task::FAIL;
+            _exit(EXIT_FAILURE);
         }
+        _exit(EXIT_SUCCESS);
     }
     else // process running is parent
     {
         int status;
-        if (waitpid(childPid, &status, 0) != 0) // wait for child process to finish
+
+        while (waitpid(childPid, &status, 0) != 0 && errno == EINTR)
         {
-            return Task::FAIL; // child process returned a failure
+
         }
 
-//        if (status && WIFEXITED(status))
+        if (errno != 0)
+        {
+            perror("waitpid: ");
+        }
+
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+        {
+            return Task::FAIL;
+        }
+
+//        if (WIFEXITED(status))
 //        {
 //            std::cout << "DEBUG: Process returned " << WEXITSTATUS(status) << std::endl;
 //        }
