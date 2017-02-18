@@ -91,7 +91,7 @@ Task* createTask(std::string input)
         std::string command = input.substr(prevPos, i - prevPos); // copy arg to new string
         //std::cout << "Arg: " << command << std::endl;
 
-        if (command.compare("exit") == 0) // if the first arg is "exit" return exit task
+        if (args.size() == 0 && command.compare("exit") == 0) // if the first arg is "exit" return exit task
         {
             return new ExitTask();
         }
