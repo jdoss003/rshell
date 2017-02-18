@@ -24,3 +24,6 @@ echoe fail
 || || || || && && && ; echo test
 exit
 EOF
+
+rm -f test.txt
+rm -rf test

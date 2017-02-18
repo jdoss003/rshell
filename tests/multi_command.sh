@@ -14,7 +14,9 @@ echo pass condition test && echo this should work
 echo pass condition that's empty && ; echo worked?
 echo fail condition test; echoe bad input || echo worked
 echoe bad input && echo pass || echo fail ; echo worked
-ls -a; echo hello && mkdir test || echo world; git status
+ls -a; echo hello && mkdir test || echo world; ls -a; git status
 echo this has a lot of arguments like too many of them &&   echo  this    has    too   many     spaces
 exit
 EOF
+
+rm -rf test
