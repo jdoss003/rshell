@@ -66,7 +66,7 @@ ExternalTask::~ExternalTask()
  */
 Task::EnumResult ExternalTask::run(Task::EnumResult r)
 {
-    retrun r;
+    return r;
 }
 #else
 /*

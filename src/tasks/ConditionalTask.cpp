@@ -54,5 +54,5 @@ Task::EnumResult ConditionalTask::run(Task::EnumResult r)
     }
 
     // condition was not true; skip any dependent conditional tasks
-    return SKIP;
+    return r;
 }

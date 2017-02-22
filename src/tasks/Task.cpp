@@ -33,7 +33,7 @@ Task::~Task() {}
  */
 void Task::run()
 {
-    this->run(SKIP);
+    this->run(PASS);
 }
 
 /*
@@ -43,7 +43,7 @@ void Task::run()
  */
 Task::EnumResult Task::run(Task::EnumResult r)
 {
-    return SKIP;
+    return r;
 }
 
 /*
