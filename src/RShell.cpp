@@ -28,7 +28,7 @@
 /*
  * Returns the name of the current logged in user
  */
-std::string getUserName()
+std::string RShell::getUserName()
 {
     char* usr = NULL;
     std::string userName = "";
@@ -45,7 +45,7 @@ std::string getUserName()
 /*
  * Returns the name of the current host machine
  */
-std::string getHostName()
+std::string RShell::getHostName()
 {
     char* hst = NULL;
     std::string hostName = "";
@@ -61,7 +61,7 @@ std::string getHostName()
 /*
  * Returns the name of the current logged in user
  */
-std::string getUserName()
+std::string RShell::getUserName()
 {
     char* usr = NULL;
     std::string userName = "";
@@ -86,7 +86,7 @@ std::string getUserName()
 /*
  * Returns the name of the current host machine
  */
-std::string getHostName()
+std::string RShell::getHostName()
 {
     char* hst = NULL;
     std::string hostName = "";

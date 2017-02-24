@@ -51,6 +51,9 @@ class RShell
         std::string hostName;
         std::string prompt;
         std::string input;
+
+        std::string getUserName();
+        std::string getHostName();
 };
 
 #endif //RSHELL_RSHELL_H
