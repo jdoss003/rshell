@@ -36,6 +36,8 @@ Task* createTask(std::string input)
     unsigned long prevPos = 0;
     std::vector<std::string> args; // Vector to hold arguments
 
+//    std::cout << "Task input: " << input << std::endl;
+
     // Separate arguments
     for (; i < input.size(); ++i)
     {
@@ -101,9 +103,9 @@ Task* createTask(std::string input)
         }
         return new ExitTask();
     }
-    else if (args.at(0).compare("test") == 0 || args.at(0).compare("[") )
+    else if (args.at(0).compare("test") == 0 || args.at(0).compare("[") == 0)
     {
-        //return new TestTask(args);
+        return new TestTask(args);
     }
 
     return new ExternalTask(args); // return task
@@ -245,8 +247,6 @@ Task* createTaskList(std::string input)
                     }
                     else
                     {
-//                        std::cout<<input.substr(i + 1, j - i - 1)<<std::endl;
-
                         if (condition) // make a conditional task or normal task from input
                         {
                             tList->addSubtask(new ConditionalTask(createTaskList(input.substr(i + 1, j - i - 1)), (orFlg ? Task::FAIL : Task::PASS)));
@@ -344,7 +344,7 @@ Task* Parser::parseInput(std::string strInput)
             }
             else
             {
-                isParen.push_back(i);
+                isParen.push_back((unsigned int)(i));
             }
         }
         else if (input[i] == '|' || input[i] == '&') // make sure connectors are in pairs and correct
@@ -440,7 +440,6 @@ Task* Parser::parseInput(std::string strInput)
         input.erase(input.length() - 1, 1);
     }
 
-
-    std::cout << "Input after cleanup: " << input << std::endl;
+//    std::cout << "Input after cleanup: " << input << std::endl;
     return createTaskList(input);
 }

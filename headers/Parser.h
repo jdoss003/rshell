@@ -34,10 +34,11 @@
 #include <vector>
 
 #include "../headers/tasks/ConditionalTask.h"
-#include "../headers/tasks/TaskList.h"
+#include "../headers/tasks/ExitTask.h"
 #include "../headers/tasks/ExternalTask.h"
 #include "../headers/tasks/Task.h"
-#include "../headers/tasks/ExitTask.h"
+#include "../headers/tasks/TaskList.h"
+#include "../headers/tasks/TestTask.h"
 
 namespace Parser
 {
