@@ -102,7 +102,7 @@ std::string TestTask::getCompletePath(std::string relativePath)
             return "";
         }
 
-        long index = relativePath.find("./");
+        unsigned long index = relativePath.find("./");
 
         if (index == 0)
         {
@@ -124,7 +124,7 @@ std::string TestTask::getCompletePath(std::string relativePath)
                 return "";
             }
 
-            cDirPath = cDirPath.substr(0, (unsigned long)(index));
+            cDirPath = cDirPath.substr(0, index);
         }
 
         cDirPath.append("/" + relativePath);

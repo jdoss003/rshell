@@ -77,6 +77,7 @@ Task* createTask(std::string input)
             if(i > 0 && input[i - 1] == '\\')
             {
                 input.erase(i - 1, 1);
+                --i;
                 continue;
             }
             std::string command = input.substr(prevPos, i - prevPos); // copy arg to new string

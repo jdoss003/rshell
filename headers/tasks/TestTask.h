@@ -28,6 +28,7 @@
 #include <cerrno>
 #include <iostream>
 #include <pwd.h>
+#include <stdlib.h>
 #include <string>
 #include <sys/stat.h>
 #include <unistd.h>
