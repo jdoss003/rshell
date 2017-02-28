@@ -402,7 +402,7 @@ Task* Parser::parseInput(std::string strInput)
         }
         else if (input[i] == '#') // delete anything after comment
         {
-            input = strInput.substr(0, i);
+            input = input.substr(0, i);
         }
         else if (isspace(input[i])) // remove extra spaces
         {
