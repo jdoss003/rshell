@@ -160,7 +160,7 @@ Task* createTaskList(std::string input)
                 }
             }
         }
-        else if (input[i] == ';') // found a normal connector
+        else if (input[i] == ';' || input[i] == '|' || input[i] == '&') // found a connector
         {
             if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
             {
@@ -180,57 +180,18 @@ Task* createTaskList(std::string input)
                 }
             }
 
-            condition = false; // set conditions for next command
-            prevCond = i + 1;
-        }
-        else if (input[i] == '|') // found the on fail connector
-        {
-            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
-            {
-                tList->addSubtask(new Task());
-            }
-            else if (i > 0 && input[i - 1] != ')')
-            {
-                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
+            condition = (input[i] == '|' || input[i] == '&'); // set conditions for next command
 
-                if (condition) // make a conditional task or normal task from input
-                {
-                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
-                }
-                else
-                {
-                    tList->addSubtask(createTask(cmd));
-                }
-            }
-
-            condition = true; // set conditions for next command
-            orFlg = true;
-            prevCond = i + 2;
-            ++i;
-        }
-        else if (input[i] == '&') // found the on pass connector
-        {
-            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
+            if (condition)
             {
-                tList->addSubtask(new Task());
+                orFlg = (input[i] == '|');
+                prevCond = i + 2;
+                ++i;
             }
-            else if (i > 0 && input[i - 1] != ')')
+            else
             {
-                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
-
-                if (condition) // make a conditional task or normal task from input
-                {
-                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
-                }
-                else
-                {
-                    tList->addSubtask(createTask(cmd));
-                }
+                prevCond = i + 1;
             }
-            condition = true; // set conditions for next command
-            orFlg = false;
-            prevCond = i + 2;
-            ++i;
         }
         else if (input[i] == '(')
         {
@@ -333,18 +294,22 @@ Task* Parser::parseInput(std::string strInput)
             {
                 if (isParen.empty())
                 {
-                    std::cout << "Error: Found unmatched parenthesis!" << std::endl;
+                    std::cout << "Error: Found unmatched parentheses!" << std::endl;
                     std::cout << input << std::endl;
                     std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
                     return new Task();
                 }
-                else
-                {
-                    isParen.pop_back();
-                }
+                isParen.pop_back();
             }
             else
             {
+                if (i > 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';' )
+                {
+                    std::cout << "Error: No connector between parentheses!" << std::endl;
+                    std::cout << input << std::endl;
+                    std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
+                    return new Task();
+                }
                 isParen.push_back((unsigned int)(i));
             }
         }
