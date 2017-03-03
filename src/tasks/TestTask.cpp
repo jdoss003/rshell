@@ -78,7 +78,7 @@ std::string TestTask::getCurrentDir()
 
 std::string TestTask::getCompletePath(std::string relativePath)
 {
-    if (relativePath.empty() || (relativePath[0] != '~' && relativePath[0] != '.'))
+    if (relativePath.empty() || relativePath[0] == '/')
     {
         return relativePath;
     }

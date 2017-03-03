@@ -337,7 +337,7 @@ Task* Parser::parseInput(std::string strInput)
             std::cout << std::right << std::setw(int(isParen.at(i)) - pre + 1) << '^';
             pre = isParen.at(i) + 1;
         }
-        std::cout<<std::endl;
+        std::cout << std::endl;
         return new Task();
     }
 
