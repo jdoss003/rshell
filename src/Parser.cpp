@@ -303,13 +303,6 @@ Task* Parser::parseInput(std::string strInput)
             }
             else
             {
-                if (i > 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';' )
-                {
-                    std::cout << "Error: No connector between parentheses!" << std::endl;
-                    std::cout << input << std::endl;
-                    std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
-                    return new Task();
-                }
                 isParen.push_back((unsigned int)(i));
             }
         }
@@ -391,6 +384,20 @@ Task* Parser::parseInput(std::string strInput)
                 input.erase(i, 1);
                 --i;
             }
+        }
+        else if (i > 1 && input[i] == '(' && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';' )
+        {
+            std::cout << "Error: No connector between parentheses!" << std::endl;
+
+            input = input.substr(i);
+            unsigned long j;
+
+            if ((j = strInput.rfind(input)) != std::string::npos)
+            {
+                std::cout << strInput << std::endl;
+                std::cout << std::right << std::setw(int(j) + 1) << '^' << std::endl;
+            }
+            return new Task();
         }
     }
 
