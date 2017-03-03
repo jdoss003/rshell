@@ -385,7 +385,7 @@ Task* Parser::parseInput(std::string strInput)
                 --i;
             }
         }
-        else if (i > 1 && input[i] == '(' && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';' )
+        else if (input[i] == '(' && ((i >= 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';') || (i == 1 && !isspace(input[i - 1]))))
         {
             std::cout << "Error: No connector between parentheses!" << std::endl;
 
