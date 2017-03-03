@@ -87,9 +87,9 @@ std::string TestTask::getCompletePath(std::string relativePath)
 
         std::string hDirPath = getUserDir();
 
-        relativePath.erase(0, 2);
+        relativePath.erase(0, 1);
 
-        hDirPath.append("/" + relativePath);
+        hDirPath.append(relativePath);
 
         return hDirPath;
     }
@@ -170,13 +170,13 @@ Task::EnumResult TestTask::run(Task::EnumResult r)
     {
         if (this->args.at(1)[0] == '-')
         {
-            if (isValidArg(this->args.at(1)))
+            if (!isValidArg(this->args.at(1)))
             {
-                std::cout << this->OUT_TRUE << std::endl; // TODO ask prof. opinion
-                return Task::PASS;
+                std::cout << "test : invalid argument '" << this->args.at(1) << "'" << std:: endl;
+                return Task::FAIL;
             }
 
-            std::cout << "test : invalid argument '" << this->args.at(1) << "'" << std:: endl;
+            std::cout << "test : path argument not specified" << std:: endl;
             return Task::FAIL;
         }
 
