@@ -214,6 +214,8 @@ Task::EnumResult TestTask::run(Task::EnumResult r)
         }
     }
 
+    errno = 0;
+
     std::cout << this->OUT_FALSE << std::endl;
     return Task::FAIL;
 }
