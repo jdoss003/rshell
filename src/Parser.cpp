@@ -24,6 +24,19 @@
 
 #include "../headers/Parser.h"
 
+std::string toLowerCase(std::string input)
+{
+    for (unsigned int i = 0; i < input.length(); ++i)
+    {
+        if (isalpha(input[i]))
+        {
+            input[i] = (char)tolower(input[i]);
+        }
+    }
+
+    return input;
+}
+
 /*
  * Creates a task when a command and arguments
  * @param input is the string of command and arguments
@@ -96,7 +109,7 @@ Task* createTask(std::string input)
         args.push_back(command); // add arg to vector
     }
 
-    if (args.at(0).compare("exit") == 0) // if the first arg is "exit" return exit task
+    if (toLowerCase(args.at(0)).compare("exit") == 0) // if the first arg is "exit" return exit task
     {
         if (args.size() > 1)
         {
@@ -104,7 +117,7 @@ Task* createTask(std::string input)
         }
         return new ExitTask();
     }
-    else if (args.at(0).compare("test") == 0 || args.at(0).compare("[") == 0)
+    else if (toLowerCase(args.at(0)).compare("test") == 0 || args.at(0).compare("[") == 0)
     {
         return new TestTask(args);
     }
