@@ -39,11 +39,43 @@ $ echo \"hello\"
 "hello"
 ````
 #####You can enter comments using \#
+Anything after # will be ignored
 * *EXAMPLE:*
 ````
 $ echo hello #this is a comment
 hello
 ````
+#####You can use the test command
+The Test command tests to see if a something in the file exists
+
+You can use the following as arguments:  
+-e checks if the file/directory exists  
+-f checks if the file/directory exists and is a regular file  
+-d checks if the file/directory exists and is a directory  
+* *EXAMPLE:*
+````
+$ test -e test/file/path
+(True)
+````  
+This will return (False) if path did not exits  
+
+you can also use symbolic test using brackets:  
+* *EXAMPLE*
+````
+$ [ -e test/file/path ]
+(True)
+````  
+#####You can use the parenthesis to add precedence to your logic
+Surround parts of your code in parenthesis to add precedence.
+ 
+* *EXAMPLE*
+````
+$ echo hello; (echo test || echo fail) && (echoe test || echo test)
+hello
+test
+Error running command - echoe: No such file or directory
+test
+````  
 #####To end the program enter exit
 * *EXAMPLE:*
 ````

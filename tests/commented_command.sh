@@ -12,5 +12,9 @@ echo next is just a comment
 #comment
 echo next is just a comment with real input
 #echo none of this should word
+test text.txt #this should be false
+#test text.txt #this should be false
+echo comment; #(echo hello && echo works)
+echo comment; (echo cut #commentcomment)
 exit
 EOF
