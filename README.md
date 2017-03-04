@@ -38,7 +38,7 @@ If you begin and end arguments with a forward slash and a quote \\" the program 
 $ echo \"hello\" 
 "hello"
 ````
-#####You can enter comments using \#
+#####You can enter comments using \# 
 Anything after # will be ignored
 * *EXAMPLE:*
 ````

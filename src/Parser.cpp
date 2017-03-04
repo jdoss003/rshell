@@ -24,6 +24,12 @@
 
 #include "../headers/Parser.h"
 
+/*
+ * Quick function to convert a string to lower case
+ * @param input is the string to be converted
+ *
+ * @returns a string that is the lower case version of the input
+ */
 std::string toLowerCase(std::string input)
 {
     for (unsigned int i = 0; i < input.length(); ++i)
@@ -206,21 +212,21 @@ Task* createTaskList(std::string input)
                 prevCond = i + 1;
             }
         }
-        else if (input[i] == '(')
+        else if (input[i] == '(') // found open parenthesis, time to find the closing one
         {
             for (unsigned long j = i + 1; j < input.length(); ++j)
             {
-                if (input[j] == '(')
+                if (input[j] == '(') // oh now we have more to find
                 {
                     ++parenCount;
                 }
-                else if (input[j] == ')')
+                else if (input[j] == ')') // we found a closing one!
                 {
-                    if (parenCount != 0)
+                    if (parenCount != 0) // oh... not the one we were looking for
                     {
                         --parenCount;
                     }
-                    else
+                    else // we found it! we are done!
                     {
                         if (condition) // make a conditional task or normal task from input
                         {
@@ -230,6 +236,8 @@ Task* createTaskList(std::string input)
                         {
                             tList->addSubtask(createTaskList(input.substr(i + 1, j - i - 1)));
                         }
+
+                        // update the conditions to continue
                         i = j;
                         prevCond = j + 1;
                         break;
@@ -257,10 +265,11 @@ Task* createTaskList(std::string input)
 }
 
 /*
- * parseInput: Preprocesses the users input and searches for errors and removes extra white space.
+ * parseInput: Pre-processes the users input, searches for errors, and removes extra white space before creating
+ *             a task from the input.
  * @param strInput: string containing user input.
  *
- * @return a string containing cleaned up user input.
+ * @return a a task object that will execute the commands from the input
  */
 Task* Parser::parseInput(std::string strInput)
 {
@@ -340,7 +349,7 @@ Task* Parser::parseInput(std::string strInput)
         }
     }
 
-    if(!isParen.empty()) //if there is a parenthesis without a pair.
+    if(!isParen.empty()) // if there is a parenthesis without a pair.
     {
         std::cout << "Error: Found unmatched parenthesis!" << std::endl;
         std::cout << input << std::endl;
@@ -397,7 +406,7 @@ Task* Parser::parseInput(std::string strInput)
                 input.erase(i, 1);
                 --i;
             }
-        }
+        }                   // ugly check but it works; TODO can be cleaned up when the todo below is done
         else if (input[i] == '(' && ((i >= 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';') || (i == 1 && !isspace(input[i - 1]))))
         {
             std::cout << "Error: No connector between parentheses!" << std::endl;
@@ -413,6 +422,8 @@ Task* Parser::parseInput(std::string strInput)
             return new Task();
         }
     }
+
+    // TODO move the below statement into loop above
 
     // erase unnecessary space at beginning
     if (input.length() > 0 && isspace(input[0]))
