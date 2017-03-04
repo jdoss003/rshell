@@ -25,6 +25,7 @@ test -f file1 || test -f text.txt
 [ file1 ]
 [ file2 ]
 test -f file1 || echo works
+exit
 EOF
 rm -rf file1
 rm -f test.txt

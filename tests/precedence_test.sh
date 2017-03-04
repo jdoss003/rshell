@@ -19,4 +19,5 @@ echo start && echoe fail || (echo pass || echo fail))
 (((((((())))))))
 (((((((()))))))
 ()()()()()
+exit
 EOF
