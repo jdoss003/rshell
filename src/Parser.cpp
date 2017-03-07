@@ -406,8 +406,13 @@ Task* Parser::parseInput(std::string strInput)
                 input.erase(i, 1);
                 --i;
             }
-        }                   // ugly check but it works; TODO can be cleaned up when the todo below is done
-        else if (input[i] == '(' && i > 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';')
+            else if (i == 0 || i == input.length() - 1)
+            {
+                input.erase(i, 1);
+                --i;
+            }
+        }
+        else if (input[i] == '(' && i >= 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';')
         {
             std::cout << "Error: No connector between parentheses!" << std::endl;
 
@@ -421,34 +426,6 @@ Task* Parser::parseInput(std::string strInput)
             }
             return new Task();
         }
-        else if (input[i] == '(' && i == 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';' && !isspace(input[i - 1]))
-        {
-            std::cout << "Error: No connector between parentheses!" << std::endl;
-
-            input = input.substr(i);
-            unsigned long j;
-
-            if ((j = strInput.rfind(input)) != std::string::npos)
-            {
-                std::cout << strInput << std::endl;
-                std::cout << std::right << std::setw(int(j) + 1) << '^' << std::endl;
-            }
-            return new Task();
-        }
-    }
-
-    // TODO move the below statement into loop above
-
-    // erase unnecessary space at beginning
-    if (input.length() > 0 && isspace(input[0]))
-    {
-        input.erase(0, 1);
-    }
-
-    // erase unnecessary space at end
-    if (input.length() > 0 && isspace(input[input.length() - 1]))
-    {
-        input.erase(input.length() - 1, 1);
     }
 
 //    std::cout << "Input after cleanup: " << input << std::endl;
