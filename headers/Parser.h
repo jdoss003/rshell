@@ -39,6 +39,7 @@
 #include "../headers/tasks/Task.h"
 #include "../headers/tasks/TaskList.h"
 #include "../headers/tasks/TestTask.h"
+#include "../headers/utils/FileUtils.h"
 
 namespace Parser
 {

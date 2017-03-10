@@ -184,7 +184,7 @@ Task* createTaskList(std::string input)
         }
         else if (input[i] == ';' || input[i] == '|' || input[i] == '&') // found a connector
         {
-            if (i - prevCond > 0 && input[i - 1] != ')')
+            if (i > prevCond && input[i - 1] != ')')
             {
                 std::string cmd = input.substr(prevCond, i - prevCond); // separate command
 
@@ -237,6 +237,81 @@ Task* createTaskList(std::string input)
             {
                 prevCond = i + 1;
             }
+        }
+        else if(input[i] == '<' || input[i] == '>')
+        {
+            if (i > prevCond && input[i - 1] != ')')
+            {
+                std::string cmd = input.substr(prevCond, i - prevCond); // separate command
+
+                if (condition) // make a conditional task or normal task from input
+                {
+                    tList->addSubtask(createCondTask(cmd, (orFlg ? Task::FAIL : Task::PASS)));
+                }
+                else
+                {
+                    tList->addSubtask(createTask(cmd));
+                }
+            }
+
+            prevCond = i + 1;
+            std::string file = "";
+            unsigned long j = i + 1;
+
+            for (; j < input.length(); ++j)
+            {
+                if (input[j] == ';' || input[j] == '|' || input[j] == '&')
+                {
+                    file = input.substr(prevCond, j - prevCond); // capture file name if connector
+                    prevCond = j;
+                }
+            }
+
+            if(j > prevCond)
+            {
+                file = input.substr(prevCond, j - prevCond); // capture filename if no connector
+            }
+
+            if(input[i] == '>' && i + 1 < input.length() && input[i+1] == '>' && FileUtils::openFileOutputAppend(file, r)) //if double arrow output
+            {
+                if(tList->isEmpty())
+                {
+                    r.closeWrite();
+                }
+                else
+                {
+                    tList->getLast()->setOutputRedirect(r);
+                }
+
+            }
+            else if(input[i] == '>' && (i + 1 >= input.length() || input[i + 1] != '>')  &&  FileUtils::openFileOutput(file, r))
+            {
+                if(tList->isEmpty())
+                {
+                    r.closeWrite();
+                }
+                else
+                {
+                    tList->getLast()->setOutputRedirect(r);
+                }
+            }
+            else if(input[i] == '<' && FileUtils::openFileInput(file, r))
+            {
+                if(tList->isEmpty())
+                {
+                    r.closeRead();
+                }
+                else
+                {
+                    tList->getLast()->setInputRedirect(r);
+                }
+            }
+            else
+            {
+                delete tList;
+                return new Task();
+            }
+            i = j - 1;
         }
         else if (input[i] == '(') // found open parenthesis, time to find the closing one
         {
