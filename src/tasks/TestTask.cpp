@@ -32,126 +32,6 @@ const std::string TestTask::OUT_TRUE  = "(True)\n";
 const std::string TestTask::OUT_FALSE = "(False)\n";
 
 /*
- * Gets the current user's home directory and returns it as a string
- *
- * @returns user's home directory or an empty string if the directory could not be found
- */
-std::string TestTask::getUserDir()
-{
-    char *hDir;
-    std::string homeDir = "";
-
-    hDir = getenv("HOME");
-    if (hDir)
-    {
-        homeDir.append(hDir);
-    }
-    else
-    {
-        hDir = getpwuid(getuid())->pw_dir;
-
-        if (hDir)
-        {
-            homeDir.append(hDir);
-        }
-    }
-
-    return homeDir;
-}
-
-/*
- * Gets the current working directory and returns it as a string
- *
- * @returns current working directory or an empty string if the directory could not be found
- */
-std::string TestTask::getCurrentDir()
-{
-    unsigned long size = 1024;
-    char* cDir = new char[size];
-
-    std::string cDirPath = "";
-
-    while (getcwd(cDir, size) == NULL && errno == ERANGE)
-    {
-        size *= 2;
-        cDir = new char[size];
-    }
-
-    if (cDir)
-    {
-        cDirPath.append(cDir);
-        delete[] cDir;
-    }
-
-    return cDirPath;
-}
-
-/*
- * Transforms a relative path into a complete working path
- *
- * @returns the complete path or an empty string if an error occurred while creating the path
- */
-std::string TestTask::getCompletePath(std::string relativePath)
-{
-    if (relativePath.empty() || relativePath[0] == '/') // nothing to do
-    {
-        return relativePath;
-    }
-    else if (relativePath[0] == '~') // add user dir to front
-    {
-
-        std::string hDirPath = getUserDir();
-
-        relativePath.erase(0, 1);
-
-        hDirPath.append(relativePath);
-
-        return hDirPath;
-    }
-    else
-    {
-        std::string cDirPath = getCurrentDir();
-
-        if (cDirPath.empty()) // could not get the CWD so that's a problem...
-        {
-            return "";
-        }
-
-        unsigned long index = relativePath.find("./"); // do we just add the CWD to the front?
-
-        if (index == 0) // yes we do
-        {
-            relativePath.erase(0, 2);
-        }
-
-        // we need to go up a level (maybe more than once)
-        while ((index = relativePath.find("../")) != std::string::npos)
-        {
-            if (index != 0) // the string was found but its not at the front so we don't care
-            {
-                break;
-            }
-
-            relativePath.erase(0, 3); // erase the ../ on the relative path string
-
-
-            // could not find a / in the CWD path or it is the last one
-            // either way this is a problem so we just exit here
-            if ((index = cDirPath.rfind('/')) == std::string::npos || index == 0)
-            {
-                return "";
-            }
-
-            cDirPath = cDirPath.substr(0, index); // remove the last dir in the CWD path
-        }
-
-        cDirPath.append("/" + relativePath); // add the relative path to the end of the CWD path
-
-        return cDirPath;
-    }
-}
-
-/*
  * Helper function to determine if a string is a valid arg for the command
  *
  * @returns true if the string is a valid arg, otherwise false
@@ -211,7 +91,7 @@ Task::EnumResult TestTask::run(Task::EnumResult r)
 
         // looks like we are ok; set the default arg and get the complete path
         arg = this->ARG_EXISTS;
-        fullPath = getCompletePath(this->args.at(1));
+        fullPath = EnvUtils::getCompletePath(this->args.at(1));
     }
     else
     {
@@ -223,7 +103,7 @@ Task::EnumResult TestTask::run(Task::EnumResult r)
 
         // looks like we are ok; set the arg and get the complete path
         arg = this->args.at(1);
-        fullPath = getCompletePath(this->args.at(2));
+        fullPath = EnvUtils::getCompletePath(this->args.at(2));
     }
 
 //    std::cout << "DEBUG: " << fullPath << std::endl;

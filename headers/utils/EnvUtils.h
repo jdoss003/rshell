@@ -22,29 +22,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
-#ifndef RSHELL_RSHELL_H
-#define RSHELL_RSHELL_H
+#ifndef RSHELL_ENVUTILS_H
+#define RSHELL_ENVUTILS_H
 
-#include <iostream>
-#include <stdexcept>
+#include <cerrno>
+#include <pwd.h>
+#include <stdlib.h>
+#include <string>
+#include <unistd.h>
 
-#include "Parser.h"
-#include "tasks/Task.h"
-#include "utils/EnvUtils.h"
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 
-class RShell
+#else
+#include <limits.h>
+#include <unistd.h>
+#endif
+
+namespace EnvUtils
 {
-    public:
-        RShell();
-        ~RShell();
-        void runLoop();
+    std::string getCompletePath(std::string relativePath);
+    std::string getCurrentDir();
+    std::string getHostName();
+    std::string getUserName();
+    std::string getUserDir();
+}
 
-    private:
-        Task* task;
-        std::string userName;
-        std::string hostName;
-        std::string prompt;
-        std::string input;
-};
-
-#endif //RSHELL_RSHELL_H
+#endif //RSHELL_ENVUTILS_H

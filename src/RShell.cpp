@@ -24,102 +24,6 @@
 
 #include "../headers/RShell.h"
 
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-/*
- * Returns the name of the current logged in user
- */
-std::string RShell::getUserName()
-{
-    char* usr = NULL;
-    std::string userName = "";
-
-    usr = std::getenv("USERNAME");
-    if (usr)
-    {
-        userName.append(usr);
-        usr = NULL;
-    }
-    return userName;
-}
-
-/*
- * Returns the name of the current host machine
- */
-std::string RShell::getHostName()
-{
-    char* hst = NULL;
-    std::string hostName = "";
-
-    hst = std::getenv("COMPUTERNAME");
-    if (hst)
-    {
-        hostName.append(hst);
-    }
-    return hostName;
-}
-#else
-/*
- * Returns the name of the current logged in user
- */
-std::string RShell::getUserName()
-{
-    char* usr = NULL;
-    std::string userName = "";
-
-    usr = std::getenv("USER");
-    if (usr)
-    {
-        userName.append(usr);
-    }
-    else
-    {
-        usr = new char[_POSIX_LOGIN_NAME_MAX];
-        if (getlogin_r(usr, _POSIX_LOGIN_NAME_MAX) == 0)
-        {
-            userName.append(usr);
-        }
-        delete[] usr;
-    }
-    return userName;
-}
-
-/*
- * Returns the name of the current host machine
- */
-std::string RShell::getHostName()
-{
-    char* hst = NULL;
-    std::string hostName = "";
-
-    hst = std::getenv("COMPUTERNAME");
-    if (hst)
-    {
-        hostName.append(hst);
-    }
-    else
-    {
-        hst = new char[_POSIX_HOST_NAME_MAX];
-        if (gethostname(hst, _POSIX_HOST_NAME_MAX) == 0)
-        {
-            hostName.append(hst);
-        }
-        delete[] hst;
-    }
-
-    if (!hostName.empty())
-    {
-        unsigned long i = hostName.find('.');
-
-        if (i != std::string::npos)
-        {
-            hostName = hostName.substr(0, i);
-        }
-    }
-
-    return hostName;
-}
-#endif
-
 RShell::RShell() : task(NULL), userName(""), hostName(""), prompt(""), input("") {}
 
 RShell::~RShell()
@@ -135,8 +39,8 @@ RShell::~RShell()
  */
 void RShell::runLoop()
 {
-    this->userName = getUserName();
-    this->hostName = getHostName();
+    this->userName = EnvUtils::getUserName();
+    this->hostName = EnvUtils::getHostName();
 
     this->prompt = (!this->userName.empty() && !this->hostName.empty() ? this->userName + "@" + this->hostName + " $ " : "$ ");
 

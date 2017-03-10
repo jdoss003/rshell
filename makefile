@@ -7,7 +7,8 @@ BINDIR=bin
 LIBDIR=$(BINDIR)/libs
 
 SOURCES:=$(wildcard $(SRCDIR)/*.cpp) \
-    $(wildcard $(SRCDIR)/tasks/*.cpp)
+    $(wildcard $(SRCDIR)/tasks/*.cpp) \
+    $(wildcard $(SRCDIR)/utils/*.cpp)
 OBJECTS:=$(SOURCES:$(SRCDIR)/%.cpp=$(LIBDIR)/%.o)
 DEPENDS:=$(OBJECTS:.o=.d)
 
@@ -24,6 +25,11 @@ $(LIBDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) $(CC_FLAGS) $< -MM -MT $@ > $(@:.o=.d)
 
 $(LIBDIR)/tasks/%.o : $(SRCDIR)/tasks/%.cpp
+	mkdir -p $(@D)
+	$(CC) $(CC_FLAGS) -c $< -o $@
+	$(CC) $(CC_FLAGS) $< -MM -MT $@ > $(@:.o=.d)
+
+$(LIBDIR)/utils/%.o : $(SRCDIR)/utils/%.cpp
 	mkdir -p $(@D)
 	$(CC) $(CC_FLAGS) -c $< -o $@
 	$(CC) $(CC_FLAGS) $< -MM -MT $@ > $(@:.o=.d)

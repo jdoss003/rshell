@@ -27,12 +27,11 @@
 
 #include <cerrno>
 #include <iostream>
-#include <pwd.h>
-#include <stdlib.h>
 #include <string>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <vector>
+
+#include "../utils/EnvUtils.h"
 #include "Task.h"
 
 class TestTask : public Task
@@ -52,11 +51,7 @@ class TestTask : public Task
         static const std::string OUT_TRUE;
         static const std::string OUT_FALSE;
 
-        std::string getUserDir();
-        std::string getCurrentDir();
-        std::string getCompletePath(std::string relativePath);
         bool isValidArg(std::string arg);
-
 };
 
 #endif //RSHELL_TESTTASK_H
