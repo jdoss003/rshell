@@ -56,3 +56,13 @@ Task::EnumResult ConditionalTask::run(Task::EnumResult r)
     // condition was not true; skip any dependent conditional tasks
     return r;
 }
+
+void ConditionalTask::setInputRedirect(Redirector r)
+{
+    this->task->setInputRedirect(r);
+}
+
+void ConditionalTask::setOutputRedirect(Redirector r)
+{
+    this->task->setOutputRedirect(r);
+}

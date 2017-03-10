@@ -62,3 +62,29 @@ void TaskList::addSubtask(Task* t)
 {
     this->subtasks.push_back(t);
 }
+
+void TaskList::setInputRedirect(Redirector r)
+{
+    for (unsigned int i = 0; i < this->subtasks.size(); ++i)
+    {
+        this->subtasks.at(i)->setInputRedirect(r);
+    }
+}
+
+void TaskList::setOutputRedirect(Redirector r)
+{
+    for (unsigned int i = 0; i < this->subtasks.size(); ++i)
+    {
+        this->subtasks.at(i)->setOutputRedirect(r);
+    }
+}
+
+Task* TaskList::getLast()
+{
+    return this->subtasks.back();
+}
+
+bool TaskList::isEmpty()
+{
+    return this->subtasks.empty();
+}

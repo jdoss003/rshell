@@ -33,6 +33,8 @@ class ConditionalTask : public Task
         ConditionalTask(Task* t, EnumResult r);
         ~ConditionalTask();
         EnumResult run(EnumResult r);
+        void setInputRedirect(Redirector r);
+        void setOutputRedirect(Redirector r);
 
     private:
         Task* task;

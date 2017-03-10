@@ -35,6 +35,11 @@ class TaskList : public Task
         ~TaskList();
         void addSubtask(Task* t);
         EnumResult run(EnumResult r);
+        void setInputRedirect(Redirector r);
+        void setOutputRedirect(Redirector r);
+
+        Task* getLast();
+        bool isEmpty();
 
     private:
         std::vector<Task*> subtasks;

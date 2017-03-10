@@ -27,16 +27,26 @@
 
 #include <stdexcept>
 
+#include "../Redirector.h"
+
 class Task
 {
     public:
         Task();
         virtual ~Task();
+
         enum EnumResult {PASS, FAIL};
 
         void run();
         virtual EnumResult run(EnumResult);
         virtual void addSubtask(Task* t);
+
+        virtual void setInputRedirect(Redirector r);
+        virtual void setOutputRedirect(Redirector r);
+
+    protected:
+        Redirector inputRedir;
+        Redirector outputRedir;
 };
 
 #endif //RSHELL_TASK_H

@@ -85,6 +85,9 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
     }
     else if (childPid == 0) // process running is child
     {
+        this->inputRedir.doRedirectInput();
+        this->outputRedir.doRedirectOutput();
+
         if (execvp(this->args[0], this->args) < 0) // if failed to run program, then print error
         {
             std::string error = "Error running command - ";
@@ -92,10 +95,15 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
             perror(error.c_str());
             _exit(EXIT_FAILURE);
         }
+
+        this->inputRedir.closeRead();
+        this->outputRedir.closeWrite();
         _exit(EXIT_SUCCESS);
     }
     else // process running is parent
     {
+        this->inputRedir.closeWrite();
+
         int status;
 
         while (waitpid(childPid, &status, 0) != 0 && errno == EINTR)
@@ -103,9 +111,11 @@ Task::EnumResult ExternalTask::run(Task::EnumResult r)
 
         }
 
+        this->inputRedir.closeRead();
+
         if (errno != 0 && errno != ECHILD)
         {
-            perror("waitpid: ");
+            perror("waitpid");
         }
 
         if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)

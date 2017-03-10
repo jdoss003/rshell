@@ -22,54 +22,55 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
-#include "../../headers/tasks/Task.h"
+#include "../headers/Redirector.h"
 
-Task::Task() {}
+Redirector::Redirector() : readFD(STDIN_FILENO), writeFD(STDOUT_FILENO) {}
+Redirector::Redirector(int r, int w) : readFD(r), writeFD(w) {}
 
-Task::~Task()
+bool Redirector::shouldRedirectInput()
 {
-
+    return (readFD != STDIN_FILENO);
 }
 
-/*
- * Public function to run the task object
- */
-void Task::run()
+bool Redirector::shouldRedirectOutput()
 {
-    this->run(PASS);
+    return (writeFD != STDOUT_FILENO);
 }
 
-/*
- * Basic run implementation
- * @param r is the EnumResult from the previously run task (not used)
- * @returns EnumResult::SKIP
- */
-Task::EnumResult Task::run(Task::EnumResult r)
+void Redirector::doRedirectInput()
 {
-    return r;
-}
-
-/*
- * Should only be called on derived objects that override this function
- * Throws an error of called
- */
-void Task::addSubtask(Task* t)
-{
-    throw new std::runtime_error("ERROR: Tried to add a subtask to a non TaskList object!");
-}
-
-void Task::setInputRedirect(Redirector r)
-{
-    if (!this->inputRedir.shouldRedirectInput())
+    if (this->shouldRedirectInput())
     {
-        this->inputRedir = r;
+        dup2(this->readFD, STDIN_FILENO);
+        close(this->writeFD);
     }
 }
 
-void Task::setOutputRedirect(Redirector r)
+void Redirector::doRedirectOutput()
 {
-    if (!this->outputRedir.shouldRedirectOutput())
+    if (this->shouldRedirectOutput())
     {
-        this->outputRedir = r;
+        dup2(this->writeFD, STDOUT_FILENO);
+        close(this->readFD);
     }
+}
+
+void Redirector::closeRead()
+{
+    if (this->shouldRedirectInput())
+    {
+        close(this->readFD);
+    }
+}
+
+void Redirector::closeWrite()
+{
+    if (this->shouldRedirectOutput())
+    {
+        close(this->writeFD);
+    }
+}
+void Redirector::writeString(std::string output)
+{
+    write(this->writeFD, output.c_str(), output.length());
 }

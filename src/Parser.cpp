@@ -152,7 +152,7 @@ Task* createCondTask(std::string input, Task::EnumResult r)
 Task* createTaskList(std::string input)
 {
     // Create task list to be filled according to the input
-    Task* tList = new TaskList();
+    TaskList* tList = new TaskList();
 
     unsigned long i = 0;
     unsigned long prevCond = 0;
@@ -161,6 +161,9 @@ Task* createTaskList(std::string input)
 
     bool condition = false;
     bool orFlg    = false;
+    bool isPipe = false;
+
+    Redirector r;
 
     // iterate through input to break it into tasks
     for (; i < input.length(); ++i)
@@ -181,11 +184,7 @@ Task* createTaskList(std::string input)
         }
         else if (input[i] == ';' || input[i] == '|' || input[i] == '&') // found a connector
         {
-            if (i - prevCond < 1) // nothing between connectors so make it a basic task obj
-            {
-                tList->addSubtask(new Task());
-            }
-            else if (i > 0 && input[i - 1] != ')')
+            if (i - prevCond > 0 && input[i - 1] != ')')
             {
                 std::string cmd = input.substr(prevCond, i - prevCond); // separate command
 
@@ -199,7 +198,34 @@ Task* createTaskList(std::string input)
                 }
             }
 
-            condition = (input[i] == '|' || input[i] == '&'); // set conditions for next command
+            if (isPipe && !tList->isEmpty())
+            {
+                tList->getLast()->setInputRedirect(r);
+            }
+
+            isPipe = (i + 1 < input.length() && input[i] == '|' && input[i + 1] != '|');
+
+            if (isPipe && !tList->isEmpty())
+            {
+                int fd[2];
+                if (pipe(fd) != 0)
+                {
+                    perror("pipe: ");
+                    isPipe = !isPipe;
+                    r = Redirector();
+                }
+                else
+                {
+                    r = Redirector(fd[0], fd[1]);
+                    tList->getLast()->setOutputRedirect(r);
+                }
+            }
+            else
+            {
+                r = Redirector();
+            }
+
+            condition = (input[i] == '|' || input[i] == '&') && !isPipe; // set conditions for next command
 
             if (condition)
             {
@@ -259,6 +285,11 @@ Task* createTaskList(std::string input)
         {
             tList->addSubtask(createTask(cmd));
         }
+    }
+
+    if (isPipe && !tList->isEmpty())
+    {
+        tList->getLast()->setInputRedirect(r);
     }
 
     return tList; // return the task object
@@ -328,10 +359,9 @@ Task* Parser::parseInput(std::string strInput)
                 isParen.push_back((unsigned int)(i));
             }
         }
-        else if (input[i] == '|' || input[i] == '&') // make sure connectors are in pairs and correct
+        else if (input[i] == '&') // make sure connectors are in pairs and correct
         {
-            if (i + 1 < input.length() &&
-                ((input[i] == '|' && input[i + 1] == '|') || (input[i] == '&' && input[i + 1] == '&')))
+            if (i + 1 < input.length() && (input[i] == '&' && input[i + 1] == '&'))
             {
                 ++i;
             }
@@ -428,6 +458,6 @@ Task* Parser::parseInput(std::string strInput)
         }
     }
 
-//    std::cout << "Input after cleanup: " << input << std::endl;
+    std::cout << "Input after cleanup: " << input << std::endl;
     return createTaskList(input);
 }

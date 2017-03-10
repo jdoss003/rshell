@@ -22,54 +22,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ***************************************************************************/
 
-#include "../../headers/tasks/Task.h"
+#ifndef RSHELL_REDIRECTOR_H
+#define RSHELL_REDIRECTOR_H
 
-Task::Task() {}
+#include <unistd.h>
+#include <string>
 
-Task::~Task()
+class Redirector
 {
+    public:
+        Redirector();
+        Redirector(int r, int w);
 
-}
+        bool shouldRedirectInput();
+        bool shouldRedirectOutput();
+        void doRedirectInput();
+        void doRedirectOutput();
+        void closeRead();
+        void closeWrite();
 
-/*
- * Public function to run the task object
- */
-void Task::run()
-{
-    this->run(PASS);
-}
+        void writeString(std::string output);
 
-/*
- * Basic run implementation
- * @param r is the EnumResult from the previously run task (not used)
- * @returns EnumResult::SKIP
- */
-Task::EnumResult Task::run(Task::EnumResult r)
-{
-    return r;
-}
+    private:
+        int readFD;
+        int writeFD;
+};
 
-/*
- * Should only be called on derived objects that override this function
- * Throws an error of called
- */
-void Task::addSubtask(Task* t)
-{
-    throw new std::runtime_error("ERROR: Tried to add a subtask to a non TaskList object!");
-}
-
-void Task::setInputRedirect(Redirector r)
-{
-    if (!this->inputRedir.shouldRedirectInput())
-    {
-        this->inputRedir = r;
-    }
-}
-
-void Task::setOutputRedirect(Redirector r)
-{
-    if (!this->outputRedir.shouldRedirectOutput())
-    {
-        this->outputRedir = r;
-    }
-}
+#endif //RSHELL_REDIRECTOR_H

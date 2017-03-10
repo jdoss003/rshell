@@ -28,8 +28,8 @@ const std::string TestTask::ARG_EXISTS = "-e";
 const std::string TestTask::ARG_FOLDER = "-f";
 const std::string TestTask::ARG_DIR    = "-d";
 
-const std::string TestTask::OUT_TRUE  = "(True)";
-const std::string TestTask::OUT_FALSE = "(False)";
+const std::string TestTask::OUT_TRUE  = "(True)\n";
+const std::string TestTask::OUT_FALSE = "(False)\n";
 
 /*
  * Gets the current user's home directory and returns it as a string
@@ -234,19 +234,19 @@ Task::EnumResult TestTask::run(Task::EnumResult r)
     {
         if((arg.compare(this->ARG_EXISTS) == 0 || arg.compare(this->ARG_FOLDER) == 0) && S_ISREG(sb.st_mode))
         {
-            std::cout << this->OUT_TRUE << std::endl;
+            this->outputRedir.writeString(this->OUT_TRUE);
             return Task::PASS;
         }
 
         if ((arg.compare(this->ARG_EXISTS) == 0 || arg.compare(this->ARG_DIR) == 0) && S_ISDIR(sb.st_mode))
         {
-            std::cout << this->OUT_TRUE << std::endl;
+            this->outputRedir.writeString(this->OUT_TRUE);
             return Task::PASS;
         }
     }
 
     errno = 0; // clear the error number if stat fails; causes problems later
 
-    std::cout << this->OUT_FALSE << std::endl;
+    this->outputRedir.writeString(this->OUT_FALSE);
     return Task::FAIL;
 }
