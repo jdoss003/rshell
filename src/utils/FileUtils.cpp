@@ -24,17 +24,47 @@
 
 #include "../../headers/utils/FileUtils.h"
 
-bool FileUtils::openFileInput(std::string, Redirector &r)
+bool FileUtils::openFileInput(std::string filePath, Redirector &r)
 {
-    return false;
+    int fd;
+    filePath = EnvUtils::getCompletePath(filePath);
+
+    if ((fd = open(filePath.c_str(), O_RDONLY)) == -1)
+    {
+        perror("open");
+        return false;
+    }
+
+    r = Redirector(fd);
+    return true;
 }
 
-bool FileUtils::openFileOutput(std::string, Redirector &r)
+bool FileUtils::openFileOutput(std::string filePath, Redirector &r)
 {
-    return false;
+    int fd;
+    filePath = EnvUtils::getCompletePath(filePath);
+
+    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC)) == -1)
+    {
+        perror("open");
+        return false;
+    }
+
+    r = Redirector(fd);
+    return true;
 }
 
-bool FileUtils::openFileOutputAppend(std::string, Redirector &r)
+bool FileUtils::openFileOutputAppend(std::string filePath, Redirector &r)
 {
-    return false;
+    int fd;
+    filePath = EnvUtils::getCompletePath(filePath);
+
+    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_APPEND)) == -1)
+    {
+        perror("open");
+        return false;
+    }
+
+    r = Redirector(fd);
+    return true;
 }

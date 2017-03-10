@@ -24,7 +24,6 @@
 
 #include "../headers/Redirector.h"
 
-Redirector::Redirector() : readFD(STDIN_FILENO), writeFD(STDOUT_FILENO) {}
 Redirector::Redirector(int r, int w) : readFD(r), writeFD(w) {}
 
 bool Redirector::shouldRedirectInput()

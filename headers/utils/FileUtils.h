@@ -25,15 +25,18 @@
 #ifndef RSHELL_FILEUTILS_H
 #define RSHELL_FILEUTILS_H
 
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <string>
 
 #include "../Redirector.h"
+#include "EnvUtils.h"
 
 namespace FileUtils
 {
-    bool openFileInput(std::string, Redirector &r);
-    bool openFileOutput(std::string, Redirector &r);
-    bool openFileOutputAppend(std::string, Redirector &r);
+    bool openFileInput(std::string filePath, Redirector &r);
+    bool openFileOutput(std::string filePath, Redirector &r);
+    bool openFileOutputAppend(std::string filePath, Redirector &r);
 }
 
 #endif //RSHELL_FILEUTILS_H

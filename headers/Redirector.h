@@ -31,8 +31,7 @@
 class Redirector
 {
     public:
-        Redirector();
-        Redirector(int r, int w);
+        Redirector(int r = STDIN_FILENO, int w = STDOUT_FILENO);
 
         bool shouldRedirectInput();
         bool shouldRedirectOutput();
