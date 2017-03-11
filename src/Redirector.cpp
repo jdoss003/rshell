@@ -24,24 +24,41 @@
 
 #include "../headers/Redirector.h"
 
-Redirector::Redirector(int r, int w) : readFD(r), writeFD(w) {}
+Redirector::Redirector(int r, int w) : readFD(r), writeFD(w), inputFile(""), outputFile("") {}
+
+Redirector::Redirector(std::string inf, std::string outf) : readFD(STDIN_FILENO), writeFD(STDOUT_FILENO), inputFile(inf), outputFile(outf) {}
 
 bool Redirector::shouldRedirectInput()
 {
-    return (readFD != STDIN_FILENO);
+    return (readFD != STDIN_FILENO || !this->inputFile.empty());
 }
 
 bool Redirector::shouldRedirectOutput()
 {
-    return (writeFD != STDOUT_FILENO);
+    return (writeFD != STDOUT_FILENO || !this->outputFile.empty());
 }
 
 void Redirector::doRedirectInput()
 {
     if (this->shouldRedirectInput())
     {
+        if (!this->inputFile.empty())
+        {
+            int fd;
+            mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+
+            if ((fd = open(this->inputFile.c_str(), O_RDONLY, mode)) == -1)
+            {
+                std::string error = "Error Opening File - ";
+                error.append(this->inputFile);
+                perror(error.c_str());
+                return;
+            }
+            this->readFD = fd;
+        }
+
         dup2(this->readFD, STDIN_FILENO);
-        close(this->writeFD);
+        this->closeWrite();
     }
 }
 
@@ -49,14 +66,28 @@ void Redirector::doRedirectOutput()
 {
     if (this->shouldRedirectOutput())
     {
+        if (!this->outputFile.empty())
+        {
+            int fd;
+            mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+
+            if ((fd = open(this->outputFile.c_str(), O_WRONLY | O_CREAT | O_APPEND, mode)) == -1)
+            {
+                std::string error = "Error Opening File - ";
+                error.append(this->outputFile);
+                perror(error.c_str());
+                return;
+            }
+            this->writeFD = fd;
+        }
         dup2(this->writeFD, STDOUT_FILENO);
-        close(this->readFD);
+        this->closeRead();
     }
 }
 
 void Redirector::closeRead()
 {
-    if (this->shouldRedirectInput())
+    if (readFD != STDIN_FILENO)
     {
         close(this->readFD);
     }
@@ -64,11 +95,12 @@ void Redirector::closeRead()
 
 void Redirector::closeWrite()
 {
-    if (this->shouldRedirectOutput())
+    if (writeFD != STDOUT_FILENO)
     {
         close(this->writeFD);
     }
 }
+
 void Redirector::writeString(std::string output)
 {
     write(this->writeFD, output.c_str(), output.length());

@@ -26,6 +26,7 @@
 #define RSHELL_EXITTASK_H
 
 #include <cstdlib>
+
 #include "Task.h"
 
 class ExitTask : public Task

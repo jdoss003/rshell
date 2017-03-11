@@ -25,18 +25,22 @@
 #ifndef RSHELL_REDIRECTOR_H
 #define RSHELL_REDIRECTOR_H
 
-#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <string>
+#include <sys/stat.h>
+#include <unistd.h>
 
 class Redirector
 {
     public:
         Redirector(int r = STDIN_FILENO, int w = STDOUT_FILENO);
+        Redirector(std::string inf, std::string outf);
 
-        bool shouldRedirectInput();
-        bool shouldRedirectOutput();
-        void doRedirectInput();
-        void doRedirectOutput();
+        virtual bool shouldRedirectInput();
+        virtual bool shouldRedirectOutput();
+        virtual void doRedirectInput();
+        virtual void doRedirectOutput();
         void closeRead();
         void closeWrite();
 
@@ -45,6 +49,8 @@ class Redirector
     private:
         int readFD;
         int writeFD;
+        std::string inputFile;
+        std::string outputFile;
 };
 
 #endif //RSHELL_REDIRECTOR_H

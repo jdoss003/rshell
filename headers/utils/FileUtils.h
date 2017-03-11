@@ -26,9 +26,9 @@
 #define RSHELL_FILEUTILS_H
 
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <stdio.h>
 #include <string>
+#include <sys/stat.h>
 
 #include "../Redirector.h"
 #include "EnvUtils.h"

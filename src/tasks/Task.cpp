@@ -28,7 +28,10 @@ Task::Task() {}
 
 Task::~Task()
 {
-
+    this->inputRedir.closeWrite();
+    this->inputRedir.closeRead();
+    this->outputRedir.closeWrite();
+    this->outputRedir.closeRead();
 }
 
 /*

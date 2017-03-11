@@ -27,50 +27,56 @@
 bool FileUtils::openFileInput(std::string filePath, Redirector &r)
 {
     int fd;
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     filePath = EnvUtils::getCompletePath(filePath);
 
-    if ((fd = open(filePath.c_str(), O_RDONLY)) == -1)
+    if ((fd = open(filePath.c_str(), O_RDONLY, mode)) == -1)
     {
         std::string error = "Error Opening File - ";
         error.append(filePath);
         perror(error.c_str());
         return false;
     }
+    close(fd);
 
-    r = Redirector(fd);
+    r = Redirector(filePath, "");
     return true;
 }
 
 bool FileUtils::openFileOutput(std::string filePath, Redirector &r)
 {
     int fd;
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     filePath = EnvUtils::getCompletePath(filePath);
 
-    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC)) == -1)
+    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode)) == -1)
     {
         std::string error = "Error Opening File - ";
         error.append(filePath);
         perror(error.c_str());
         return false;
     }
+    close(fd);
 
-    r = Redirector(fd);
+    r = Redirector("", filePath);
     return true;
 }
 
 bool FileUtils::openFileOutputAppend(std::string filePath, Redirector &r)
 {
     int fd;
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     filePath = EnvUtils::getCompletePath(filePath);
 
-    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_APPEND)) == -1)
+    if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_APPEND, mode)) == -1)
     {
         std::string error = "Error Opening File - ";
         error.append(filePath);
         perror(error.c_str());
         return false;
     }
+    close(fd);
 
-    r = Redirector(fd);
+    r = Redirector("", filePath);
     return true;
 }

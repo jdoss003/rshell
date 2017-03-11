@@ -26,6 +26,7 @@
 #define RSHELL_TASKLIST_H
 
 #include <vector>
+
 #include "Task.h"
 
 class TaskList : public Task

@@ -203,14 +203,14 @@ Task* createTaskList(std::string input)
                 tList->getLast()->setInputRedirect(r);
             }
 
-            isPipe = (i + 1 < input.length() && input[i] == '|' && input[i + 1] != '|');
+            isPipe = (input[i] == '|' && (i + 1 >= input.length() || input[i + 1] != '|'));
 
             if (isPipe && !tList->isEmpty())
             {
                 int fd[2];
                 if (pipe(fd) != 0)
                 {
-                    perror("pipe: ");
+                    perror("pipe");
                     isPipe = !isPipe;
                     r = Redirector();
                 }
@@ -254,6 +254,12 @@ Task* createTaskList(std::string input)
                 }
             }
 
+            if (isPipe && !tList->isEmpty())
+            {
+                tList->getLast()->setInputRedirect(r);
+                isPipe = false;
+            }
+
             prevCond = i + 1;
             std::string file = "";
             unsigned long j = i + 1;
@@ -271,6 +277,7 @@ Task* createTaskList(std::string input)
             if(j > prevCond)
             {
                 file = input.substr(prevCond, j - prevCond); // capture filename if no connector
+                prevCond = j;
             }
 
             if(input[i] == '>' && i + 1 < input.length() && input[i + 1] == '>' && FileUtils::openFileOutputAppend(file, r)) //if double arrow output
