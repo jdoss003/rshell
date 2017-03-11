@@ -31,7 +31,9 @@ bool FileUtils::openFileInput(std::string filePath, Redirector &r)
 
     if ((fd = open(filePath.c_str(), O_RDONLY)) == -1)
     {
-        perror("open");
+        std::string error = "Error Opening File - ";
+        error.append(filePath);
+        perror(error.c_str());
         return false;
     }
 
@@ -46,7 +48,9 @@ bool FileUtils::openFileOutput(std::string filePath, Redirector &r)
 
     if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC)) == -1)
     {
-        perror("open");
+        std::string error = "Error Opening File - ";
+        error.append(filePath);
+        perror(error.c_str());
         return false;
     }
 
@@ -61,7 +65,9 @@ bool FileUtils::openFileOutputAppend(std::string filePath, Redirector &r)
 
     if ((fd = open(filePath.c_str(), O_WRONLY | O_CREAT | O_APPEND)) == -1)
     {
-        perror("open");
+        std::string error = "Error Opening File - ";
+        error.append(filePath);
+        perror(error.c_str());
         return false;
     }
 

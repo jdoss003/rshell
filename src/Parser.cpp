@@ -264,6 +264,7 @@ Task* createTaskList(std::string input)
                 {
                     file = input.substr(prevCond, j - prevCond); // capture file name if connector
                     prevCond = j;
+                    break;
                 }
             }
 
@@ -272,7 +273,7 @@ Task* createTaskList(std::string input)
                 file = input.substr(prevCond, j - prevCond); // capture filename if no connector
             }
 
-            if(input[i] == '>' && i + 1 < input.length() && input[i+1] == '>' && FileUtils::openFileOutputAppend(file, r)) //if double arrow output
+            if(input[i] == '>' && i + 1 < input.length() && input[i + 1] == '>' && FileUtils::openFileOutputAppend(file, r)) //if double arrow output
             {
                 if(tList->isEmpty())
                 {
@@ -501,12 +502,12 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
 
-            if (i - 1 > 0 && (input[i - 1] == '|' || input[i - 1] == '&' || input[i - 1] == ';'))
+            if (i - 1 > 0 && (input[i - 1] == '|' || input[i - 1] == '&' || input[i - 1] == ';' || input[i - 1] == '>' || input[i - 1] == '<'))
             {
                 input.erase(i, 1);
                 --i;
             }
-            else if (i + 1 < input.length() && (input[i + 1] == '|' || input[i + 1] == '&' || input[i + 1] == ';'))
+            else if (i + 1 < input.length() && (input[i + 1] == '|' || input[i + 1] == '&' || input[i + 1] == ';' || input[i + 1] == '<' || input[i + 1] == '>'))
             {
                 input.erase(i, 1);
                 --i;

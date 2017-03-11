@@ -27,6 +27,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include <string>
 
 #include "../Redirector.h"
