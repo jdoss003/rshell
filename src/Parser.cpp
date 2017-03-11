@@ -541,6 +541,6 @@ Task* Parser::parseInput(std::string strInput)
         }
     }
 
-    std::cout << "Input after cleanup: " << input << std::endl;
+//    std::cout << "Input after cleanup: " << input << std::endl;
     return createTaskList(input);
 }
