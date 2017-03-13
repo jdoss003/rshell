@@ -76,6 +76,11 @@ test
 Error running command - echoe: No such file or directory
 test
 ````  
+#####You can redirect input and output using pipes
+* *EXAMPLE:*
+````
+$ cat < existingInputFile | tr A-Z a-z | tee newOutputFile1 | tr a-z A-Z > newOutputFile2
+````
 #####To end the program enter exit
 * *EXAMPLE:*
 ````

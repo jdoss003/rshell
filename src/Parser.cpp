@@ -264,6 +264,11 @@ Task* createTaskList(std::string input)
             std::string file = "";
             unsigned long j = i + 1;
 
+            if (i + 1 < input.length() && input[i + 1] == '>')
+            {
+                ++prevCond;
+                ++j;
+            }
             for (; j < input.length(); ++j)
             {
                 if (input[j] == ';' || input[j] == '|' || input[j] == '&')
