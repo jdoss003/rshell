@@ -417,7 +417,7 @@ Task* Parser::parseInput(std::string strInput)
 
                 if (j == input.length())
                 {
-                    std::cout << "Error: Found unmatched quote!" << std::endl;
+                    std::cout << "Syntax Error: Found unmatched quote!" << std::endl;
                     std::cout << input << std::endl;
                     std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
                     return new Task();
@@ -430,7 +430,7 @@ Task* Parser::parseInput(std::string strInput)
             {
                 if (isParen.empty())
                 {
-                    std::cout << "Error: Found unmatched parentheses!" << std::endl;
+                    std::cout << "Syntax Error: Found unmatched parentheses!" << std::endl;
                     std::cout << input << std::endl;
                     std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
                     return new Task();
@@ -450,7 +450,7 @@ Task* Parser::parseInput(std::string strInput)
             }
             else
             {
-                std::cout << "Error: Found invalid connector!" << std::endl;
+                std::cout << "Syntax Error: Found invalid connector!" << std::endl;
                 std::cout << input << std::endl;
                 std::cout << std::right << std::setw(int(i) + 1) << '^' << std::endl;
                 return new Task();
@@ -464,7 +464,7 @@ Task* Parser::parseInput(std::string strInput)
 
     if(!isParen.empty()) // if there is a parenthesis without a pair.
     {
-        std::cout << "Error: Found unmatched parenthesis!" << std::endl;
+        std::cout << "Syntax Error: Found unmatched parenthesis!" << std::endl;
         std::cout << input << std::endl;
         unsigned int pre = 0;
         for(unsigned int i = 0; i < isParen.size() ; ++i)
@@ -527,7 +527,7 @@ Task* Parser::parseInput(std::string strInput)
         }
         else if (input[i] == '(' && i >= 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';')
         {
-            std::cout << "Error: No connector between parentheses!" << std::endl;
+            std::cout << "Syntax Error: No connector before parentheses!" << std::endl;
 
             input = input.substr(i);
             unsigned long j;
@@ -538,6 +538,38 @@ Task* Parser::parseInput(std::string strInput)
                 std::cout << std::right << std::setw(int(j) + 1) << '^' << std::endl;
             }
             return new Task();
+        }
+        else if (input[i] == ')' && i < input.length() + 1)
+        {
+            bool foundConnector = false;
+            unsigned long j = i + 1;
+            for (; j < input.length(); ++j)
+            {
+                if (isspace(input[j]))
+                {
+                    continue;
+                }
+
+                if (input[j] == ')' || input[j] == '|' || input[j] == '&' || input[j] == ';' || input[j] == '<' || input[j] == '>')
+                {
+                    foundConnector = true;
+                }
+                break;
+            }
+
+            if (!foundConnector)
+            {
+                std::cout << "Syntax Error: No connector after parentheses!" << std::endl;
+
+                input = input.substr(i);
+
+                if ((j = strInput.rfind(input)) != std::string::npos)
+                {
+                    std::cout << strInput << std::endl;
+                    std::cout << std::right << std::setw(int(j) + 1) << '^' << std::endl;
+                }
+                return new Task();
+            }
         }
     }
 
