@@ -25,6 +25,7 @@
 #ifndef RSHELL_REDIRECTOR_H
 #define RSHELL_REDIRECTOR_H
 
+#include <cerrno>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string>
@@ -37,10 +38,10 @@ class Redirector
         Redirector(int r = STDIN_FILENO, int w = STDOUT_FILENO);
         Redirector(std::string inf, std::string outf);
 
-        virtual bool shouldRedirectInput();
-        virtual bool shouldRedirectOutput();
-        virtual void doRedirectInput();
-        virtual void doRedirectOutput();
+        bool shouldRedirectInput();
+        bool shouldRedirectOutput();
+        void doRedirectInput();
+        void doRedirectOutput();
         void closeRead();
         void closeWrite();
 

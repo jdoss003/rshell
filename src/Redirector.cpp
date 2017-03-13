@@ -56,8 +56,10 @@ void Redirector::doRedirectInput()
             }
             this->readFD = fd;
         }
-
-        dup2(this->readFD, STDIN_FILENO);
+        if (dup2(this->readFD, STDIN_FILENO) == -1)
+        {
+            perror("dup");
+        }
         this->closeWrite();
     }
 }
@@ -80,28 +82,34 @@ void Redirector::doRedirectOutput()
             }
             this->writeFD = fd;
         }
-        dup2(this->writeFD, STDOUT_FILENO);
+        if (dup2(this->writeFD, STDOUT_FILENO) == -1)
+        {
+            perror("dup");
+        }
         this->closeRead();
     }
 }
 
 void Redirector::closeRead()
 {
-    if (readFD != STDIN_FILENO)
+    if (readFD != STDIN_FILENO && close(this->readFD) == -1)
     {
-        close(this->readFD);
+        errno = 0;
     }
 }
 
 void Redirector::closeWrite()
 {
-    if (writeFD != STDOUT_FILENO)
+    if (writeFD != STDOUT_FILENO && close(this->writeFD) == -1)
     {
-        close(this->writeFD);
+        errno = 0;
     }
 }
 
 void Redirector::writeString(std::string output)
 {
-    write(this->writeFD, output.c_str(), output.length());
+    if (write(this->writeFD, output.c_str(), output.length()) != output.length())
+    {
+        perror("write");
+    }
 }
