@@ -43,6 +43,16 @@ std::string toLowerCase(std::string input)
     return input;
 }
 
+bool isConnector(char c)
+{
+    return (c == ';' || c == '|' || c == '&');
+}
+
+bool isRedirector(char c)
+{
+    return (c == '<' || c == '>');
+}
+
 /*
  * Creates a task when a command and arguments
  * @param input is the string of command and arguments
@@ -182,7 +192,7 @@ Task* createTaskList(std::string input)
                 }
             }
         }
-        else if (input[i] == ';' || input[i] == '|' || input[i] == '&') // found a connector
+        else if (isConnector(input[i])) // found a connector
         {
             if (i > prevCond && input[i - 1] != ')')
             {
@@ -238,7 +248,7 @@ Task* createTaskList(std::string input)
                 prevCond = i + 1;
             }
         }
-        else if(input[i] == '<' || input[i] == '>')
+        else if(isRedirector(input[i]))
         {
             if (i > prevCond && input[i - 1] != ')')
             {
@@ -264,14 +274,15 @@ Task* createTaskList(std::string input)
             std::string file = "";
             unsigned long j = i + 1;
 
-            if (i + 1 < input.length() && input[i + 1] == '>')
+            if (input[i] == '>' && i + 1 < input.length() && input[i + 1] == '>')
             {
                 ++prevCond;
                 ++j;
             }
+
             for (; j < input.length(); ++j)
             {
-                if (input[j] == ';' || input[j] == '|' || input[j] == '&')
+                if (isConnector(input[j]))
                 {
                     file = input.substr(prevCond, j - prevCond); // capture file name if connector
                     prevCond = j;
@@ -481,6 +492,8 @@ Task* Parser::parseInput(std::string strInput)
         return new Task();
     }
 
+    bool hasCommand = false;
+
     // pre-process the input
     for (unsigned long i = 0; i < input.length(); ++i)
     {
@@ -496,6 +509,63 @@ Task* Parser::parseInput(std::string strInput)
                         break;
                     }
                 }
+            }
+        }
+        else if (isConnector(input[i]))
+        {
+            unsigned long j = i + 1;
+
+            if (!hasCommand)
+            {
+                std::cout << "Syntax Error: No command before connector!" << std::endl;
+
+                input = input.substr(i);
+
+                if ((j = strInput.rfind(input)) != std::string::npos)
+                {
+                    std::cout << strInput << std::endl;
+                    std::cout << std::right << std::setw(int(j) + 1) << '^' <<  std::endl;
+                }
+                return new Task();
+            }
+            else if (i + 1 >= input.length())
+            {
+                std::cout << "Syntax Error: No command after connector!" << std::endl;
+
+                input = input.substr(i);
+
+                if ((j = strInput.rfind(input)) != std::string::npos)
+                {
+                    std::cout << strInput << std::endl;
+                    std::cout << std::right << std::setw(int(j) + 1) << '^' <<  std::endl;
+                }
+                return new Task();
+            }
+            else if (input[i] == input[i + 1] && input[i] != ';')
+            {
+                ++j;
+            }
+
+            for (; j < input.length(); ++j)
+            {
+                if (isspace(input[j]))
+                {
+                    continue;
+                }
+                else if (isConnector(input[j]) || isRedirector(input[j]))
+                {
+                    std::cout << "Syntax Error: No command after connector!" << std::endl;
+
+                    input = input.substr(i);
+
+                    if ((j = strInput.rfind(input)) != std::string::npos)
+                    {
+                        std::cout << strInput << std::endl;
+                        std::cout << std::right << std::setw(int(j) + 1) << '^' <<  std::endl;
+                    }
+                    return new Task();
+                }
+                break;
             }
         }
         else if (input[i] == '#') // delete anything after comment
@@ -514,12 +584,12 @@ Task* Parser::parseInput(std::string strInput)
                 }
             }
 
-            if (i - 1 > 0 && (input[i - 1] == '|' || input[i - 1] == '&' || input[i - 1] == ';' || input[i - 1] == '>' || input[i - 1] == '<'))
+            if (i != 0 && (isConnector(input[i - 1]) || isRedirector(input[i - 1])))
             {
                 input.erase(i, 1);
                 --i;
             }
-            else if (i + 1 < input.length() && (input[i + 1] == '|' || input[i + 1] == '&' || input[i + 1] == ';' || input[i + 1] == '<' || input[i + 1] == '>'))
+            else if (i + 1 < input.length() && (isConnector(input[i + 1]) || isRedirector(input[i + 1])))
             {
                 input.erase(i, 1);
                 --i;
@@ -530,7 +600,7 @@ Task* Parser::parseInput(std::string strInput)
                 --i;
             }
         }
-        else if (input[i] == '(' && i >= 1 && input[i - 1] != '(' && input[i - 1] != '|' && input[i - 1] != '&' && input[i - 1] != ';')
+        else if (input[i] == '(' && i >= 1 && input[i - 1] != '(' && !isConnector(input[i - 1]))
         {
             std::cout << "Syntax Error: No connector before parentheses!" << std::endl;
 
@@ -555,7 +625,7 @@ Task* Parser::parseInput(std::string strInput)
                     continue;
                 }
 
-                if (input[j] == ')' || input[j] == '|' || input[j] == '&' || input[j] == ';' || input[j] == '<' || input[j] == '>')
+                if (input[j] == ')' || isConnector(input[j]) || isRedirector(input[j]))
                 {
                     foundConnector = true;
                 }
@@ -575,6 +645,10 @@ Task* Parser::parseInput(std::string strInput)
                 }
                 return new Task();
             }
+        }
+        else if (!isRedirector(input[i]))
+        {
+            hasCommand = true;
         }
     }
 

@@ -14,3 +14,4 @@
 *.exe
 *.zip
 *.DS_Store
+/run/
