@@ -36,8 +36,7 @@
 namespace FileUtils
 {
     bool openFileInput(std::string filePath, Redirector &r);
-    bool openFileOutput(std::string filePath, Redirector &r);
-    bool openFileOutputAppend(std::string filePath, Redirector &r);
+    bool openFileOutput(std::string filePath, bool append, Redirector &r);
 }
 
 #endif //RSHELL_FILEUTILS_H

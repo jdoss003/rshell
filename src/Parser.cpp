@@ -296,7 +296,7 @@ Task* createTaskList(std::string input)
                 prevCond = j;
             }
 
-            if(input[i] == '>' && i + 1 < input.length() && input[i + 1] == '>' && FileUtils::openFileOutputAppend(file, r)) //if double arrow output
+            if(input[i] == '>' && i + 1 < input.length() && input[i + 1] == '>' && FileUtils::openFileOutput(file, true, r)) //if double arrow output
             {
                 if(tList->isEmpty())
                 {
@@ -308,7 +308,7 @@ Task* createTaskList(std::string input)
                 }
 
             }
-            else if(input[i] == '>' && (i + 1 >= input.length() || input[i + 1] != '>')  &&  FileUtils::openFileOutput(file, r))
+            else if(input[i] == '>' && (i + 1 >= input.length() || input[i + 1] != '>') && FileUtils::openFileOutput(file, false, r))
             {
                 if(tList->isEmpty())
                 {
@@ -571,6 +571,11 @@ Task* Parser::parseInput(std::string strInput)
         else if (input[i] == '#') // delete anything after comment
         {
             input = input.substr(0, i);
+
+            if (isspace(input[input.length() - 1]))
+            {
+                input.erase(input.length() - 1, 1);
+            }
         }
         else if (isspace(input[i])) // remove extra spaces
         {

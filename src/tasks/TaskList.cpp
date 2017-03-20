@@ -76,6 +76,7 @@ void TaskList::setOutputRedirect(Redirector r)
     for (unsigned int i = 0; i < this->subtasks.size(); ++i)
     {
         this->subtasks.at(i)->setOutputRedirect(r);
+        r.setAppend(true);
     }
 }
 

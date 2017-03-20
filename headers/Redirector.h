@@ -36,7 +36,9 @@ class Redirector
 {
     public:
         Redirector(int r = STDIN_FILENO, int w = STDOUT_FILENO);
-        Redirector(std::string inf, std::string outf);
+        Redirector(std::string inf, std::string outf, bool app = true);
+
+        void setAppend(bool append);
 
         bool shouldRedirectInput();
         bool shouldRedirectOutput();
@@ -52,6 +54,7 @@ class Redirector
         int writeFD;
         std::string inputFile;
         std::string outputFile;
+        bool append;
 };
 
 #endif //RSHELL_REDIRECTOR_H

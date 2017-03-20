@@ -24,9 +24,14 @@
 
 #include "../headers/Redirector.h"
 
-Redirector::Redirector(int r, int w) : readFD(r), writeFD(w), inputFile(""), outputFile("") {}
+Redirector::Redirector(int r, int w) : readFD(r), writeFD(w), inputFile(""), outputFile(""), append(true) {}
 
-Redirector::Redirector(std::string inf, std::string outf) : readFD(STDIN_FILENO), writeFD(STDOUT_FILENO), inputFile(inf), outputFile(outf) {}
+Redirector::Redirector(std::string inf, std::string outf, bool app) : readFD(STDIN_FILENO), writeFD(STDOUT_FILENO), inputFile(inf), outputFile(outf), append(app) {}
+
+void Redirector::setAppend(bool append)
+{
+    this->append = true;
+}
 
 bool Redirector::shouldRedirectInput()
 {
@@ -72,8 +77,9 @@ void Redirector::doRedirectOutput()
         {
             int fd;
             mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+            int openMode = (this->append ? O_APPEND : O_TRUNC);
 
-            if ((fd = open(this->outputFile.c_str(), O_WRONLY | O_CREAT | O_APPEND, mode)) == -1)
+            if ((fd = open(this->outputFile.c_str(), O_WRONLY | O_CREAT | openMode, mode)) == -1)
             {
                 std::string error = "Error Opening File - ";
                 error.append(this->outputFile);
