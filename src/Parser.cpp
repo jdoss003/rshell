@@ -619,7 +619,7 @@ Task* Parser::parseInput(std::string strInput)
             }
             return new Task();
         }
-        else if (input[i] == ')' && i < input.length() + 1)
+        else if (input[i] == ')' && i < input.length() - 1)
         {
             bool foundConnector = false;
             unsigned long j = i + 1;
