@@ -81,6 +81,7 @@ test
 ````
 $ cat < existingInputFile | tr A-Z a-z | tee newOutputFile1 | tr a-z A-Z > newOutputFile2
 ````
+This would take the text in existingInputFile and pipe it in all lowercase to newOutputFile1, and in all uppercase in newOutputFile2
 #####To end the program enter exit
 * *EXAMPLE:*
 ````
@@ -92,13 +93,13 @@ Process finished with exit code 0
 ````
 $ git clone https://github.com/jdoss003/rshell.git
 $ cd rshell
-$ git checkout hw2
+$ git checkout hw4
 $ make 
 $ bin/rshell
 ````
 
 ###Bugs/Limitations
-1. Windows is not supported (WIP)
+1. Windows operating systems are not supported (WIP)
 
 ###Author Contact
 Derek A. Sayler 

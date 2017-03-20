@@ -108,7 +108,7 @@ void Redirector::closeWrite()
 
 void Redirector::writeString(std::string output)
 {
-    if (write(this->writeFD, output.c_str(), output.length()) != output.length())
+    if (write(this->writeFD, output.c_str(), output.length()) != (unsigned)output.length())
     {
         perror("write");
     }
